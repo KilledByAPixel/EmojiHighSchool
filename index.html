@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<head>
+<title>Emoji High School</title>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
+<!-- No @font-face here on purpose. The zip is the whole entry, so nothing
+     outside it is fetched at boot: the emoji come from the platform font
+     until the player takes the offer at the head of the home screen, and
+     dom.js writes the @font-face into the head only then. debug.js puts the local copy (npm
+     run font, gitignored) in front of the hosted url for dev. -->
+<link rel=stylesheet href=code/style.css>
+</head><body>
+
+<!-- no markup: the phone's divs are written by domInit at boot, so the built
+     page can be nothing but the script - dom.js is the one source of truth -->
+
+<!-- game files, all in code/ - keep this list in sync with gameFiles in
+     build.mjs and test/harness.mjs -->
+<script src=code/util.js></script>
+<script src=code/audio.js></script>
+<script src=code/music.js></script>
+<script src=code/dom.js></script>
+<script src=code/network.js></script>
+<script src=code/score.js></script>
+<script src=code/avatar.js></script>
+<script src=code/player.js></script>
+<script src=code/characters.js></script>
+<script src=code/chat.js></script>
+<script src=code/calendar.js></script>
+<script src=code/device.js></script>
+<script src=code/date.js></script>
+<script src=code/end.js></script>
+<script src=code/game.js></script>
+</body>

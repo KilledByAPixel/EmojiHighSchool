@@ -1,0 +1,145 @@
+/*
+    The phone, as DOM
+    - every screen is an HTML string rendered into one element, and the game
+      only re-renders when something changes: no frame loop at all
+    - one click listener on the phone handles everything, dispatching on the
+      data-a (action) and data-i (argument) of whatever was tapped
+    - the phone is authored at a fixed 540x960 and scaled to fit the window,
+      so layout is written once and CSS does the rest
+*/
+
+'use strict';
+
+let domPhone;
+
+const byId = id => document.getElementById(id);
+
+///////////////////////////////////////////////////////////////////////////////
+
+function domInit()
+{
+    // The whole of the game's markup, written at boot rather than shipped as
+    // html: the shell stays `<script>` alone, so roadroller models these
+    // bytes with the rest of the code instead of leaving them to deflate on
+    // their own. The one source of truth - index.html and the test harness
+    // both boot through here. #m carries no class: gameRender sets its
+    // className before anything is ever painted.
+    document.body.innerHTML = '<div id=p><div id=bar></div><div id=s></div>' +
+        '<div id=hb></div><div id=m></div><div id=t></div></div>';
+
+    domPhone = byId('p');
+
+    onresize = domResize;
+    domResize();
+
+    // One listener for the whole game.
+    // The dataset keys are quoted on purpose: they are read back out of html
+    // the game wrote as a string, and Closure ADVANCED happily renames an
+    // unquoted one, which silently breaks every tap that carries an argument
+    // in the built game only.
+    domPhone.onclick = e =>
+    {
+        const target = e.target.closest('[data-a]');
+        if (!target)
+            return;
+        gameAction(target.dataset['a'], target.dataset['i']);
+    };
+}
+
+function domResize()
+{
+    const scale = min(innerWidth/540, innerHeight/960);
+    domPhone.style.transform = `translate(-50%,-50%) scale(${scale})`;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Building HTML
+
+// a tappable thing: action, argument, class, content
+function tap(action, arg, className, content)
+{
+    return `<div class="${className}" data-a="${action}" data-i="${arg}">${content}</div>`;
+}
+
+// a labelled button
+function button(action, arg, label, className = '')
+{
+    return tap(action, arg, 'btn ' + className, label);
+}
+
+function hint(text) { return `<p class=h>${text}</p>`; }
+
+// one emoji at a size, in the emoji font. Not called emoji() because half the
+// map callbacks in the game already have a local named that.
+function glyph(what, size)
+{
+    return `<span style="font-size:${size}px">${what}</span>`;
+}
+
+// something with a picture, a heading and a line about it - the shape every
+// screen reaches for when it has one thing to say
+function card(picture, title, text)
+{
+    return `<div class=card>${picture}<div class=t><h2>${title}</h2>` +
+        `<p class="h l">${text}</p></div></div>`;
+}
+
+// The inside of a contact row: their picture, the text block, and the column
+// on the right. The row itself is a tap() or a plain div, depending. A row
+// with nothing to say on the right gets no column at all rather than an empty
+// one - an empty flex item still takes the row's gap with it (Notes).
+function rowBody(picture, text, foot)
+{
+    return `${picture}<div class=t>${text}</div>` +
+        (foot ? `<div class=f>${foot}</div>` : '');
+}
+
+// one line of a text block: an emoji, in the emoji font, then words - and a
+// class for the one line that is drawn bigger than the rest (the mood line)
+function iconLine(icon, words, cls = '')
+{
+    return `<p class="h l ${cls}"><span>${icon}</span> ${words}</p>`;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// The emoji font
+
+/*
+    Twemoji is not loaded at boot, and that is a rule rather than a taste:
+    js13k wants the zip to be the whole entry, so nothing outside it is
+    fetched unless the player asks for it. The row at the head of the home
+    screen's cards is the asking (device.js, homeHTML) - in the game rather
+    than on the title, which is one tap from gone - and the answer sits on its
+    own tiny key beside the sound switches (game.js, gameSwitchLoad), so the
+    offer stands every week until it is taken and never comes back after.
+
+    Until it is asked, every glyph is drawn by whatever emoji font the device
+    already has - which is the state every screen is built to survive. What
+    changes is the art style, and on a platform without the newest glyphs, a
+    handful of blanks; nothing the game does depends on the font being there.
+
+    The unicode-range keeps Twemoji to the emoji blocks: it holds the digits
+    too, and without the range every number on the phone would be drawn in it.
+    debug.js puts the local copy (npm run font) in front of the hosted one for
+    dev; the shipped game only ever names the hosted url, and only after a tap.
+*/
+let domFontOn = 0;
+let domFontCSS = '<style>@font-face{font-family:emoji;src:url(//killedbyapixel.github.io/Twemoji.ttf);unicode-range:U+2190-2BFF,U+FE0F,U+200D,U+1F000-1FAFF}</style>';
+
+/*
+    += rather than insertAdjacentHTML, which is the honest way to append and
+    measured 18 bytes dearer: the string carries its own <style> tags and
+    document.head.innerHTML is a word-for-word repeat of the line build.mjs
+    writes in front of the bundle, and a repeat costs roadroller almost
+    nothing. What it buys is a reparse of the whole head, which in the built
+    page is the 17k script itself - once, on a deliberate tap, and a script
+    element that comes back through innerHTML never runs again (the html spec
+    marks it already-started), so the game is not booted a second time. The
+    dev page reparses a <link> instead and refetches the stylesheet from
+    cache.
+*/
+function domFontSet(on)
+{
+    if (domFontOn = on)
+        document.head.innerHTML += domFontCSS;
+}

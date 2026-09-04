@@ -1,0 +1,259 @@
+/* The phone. Authored at 540x960 and scaled to the window by dom.js. */
+
+body {
+    margin: 0;
+    background: #0a0a10;
+    color: #fff;
+    font: 20px emoji, system-ui, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: #0000;
+}
+
+/* `emoji` is first in the stack for the whole page, but nothing here defines
+   it: the @font-face is a string in dom.js that the home screen's font offer
+   writes into the head, because js13k wants the zip to be the whole entry and
+   the font is hosted. Until it is asked for, every glyph falls through to the
+   platform emoji font - a different art style, and on Windows 10, whose Segoe
+   UI Emoji lacks the Unicode 13 glyphs, a few blanks. Twemoji also holds the
+   digits (the base of the keycap emoji), so that @font-face carries a
+   unicode-range limiting it to the emoji blocks: text and numbers stay in the
+   system font whether it is loaded or not. */
+
+#p {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 540px;
+    height: 960px;
+    background: #17161f;
+    border-radius: 34px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* status bar and home bar */
+#bar, #hb {
+    background: #24222e;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 19px;
+    gap: 10px;
+    flex: none;
+}
+#bar { height: 46px; }
+#hb { height: 52px; justify-content: center; }
+#bar .r { flex: 1; }   /* the week, centred between the two groups */
+#hb .btn { padding: 6px 30px; }
+
+#s {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+/* a phone has no scrollbars, anywhere */
+::-webkit-scrollbar { width: 0; }
+
+h1 { font-size: 30px; margin: 4px 0 0; text-align: center; }
+h2 { font-size: 22px; margin: 0; }
+p  { margin: 0; }
+/* the short tags are layout hooks, not typography: u is a bar, s a badge, i a
+   label, b a glyph - only a name in a contact row is actually bold */
+b { font-weight: normal; }
+i { font-style: normal; }
+u, s { text-decoration: none; }
+.h { color: #9d99ad; font-size: 16px; text-align: center; }
+.h.l { text-align: left; }
+
+.btn {
+    background: #2f2c3d;
+    border-radius: 12px;
+    padding: 12px 18px;
+    text-align: center;
+    cursor: pointer;
+}
+.btn:active { background: #3d3950; }
+.btn.go { background: #2f4a7a; }
+.btn.off { background: #1f1d29; color: #6e6a7d; }
+
+/* The home screen: six tiles, three across and two down, filling the phone -
+   the week is spent from here, so this is the biggest thing on the screen. */
+.apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 8px 0; }
+.app { text-align: center; cursor: pointer; }
+.app b {
+    display: block;
+    position: relative;
+    background: #2f2c3d;
+    border-radius: 30px;
+    font-size: 68px;
+    padding: 22px 0 24px;
+}
+.app i { display: block; font-size: 18px; margin-top: 6px; }
+.app.off { color: #6e6a7d; }
+.app.off b { background: #1f1d29; }
+/* The corner mark: the ★ on a slot still to spend, or the dot on a message
+   waiting to be read. The colour only reaches the star - 🔴 is a colour glyph
+   out of the emoji font and paints itself. ★ is U+2605, which Twemoji does
+   not carry and never will: it is a text symbol, not an emoji, so it falls
+   through to the platform's own monochrome one and takes this gold. That is
+   the whole trick, and npm run font:sweep reports it every time. */
+.app b s { position: absolute; top: 4px; right: 10px; font-size: 26px; color: #ffce4a; }
+/* the same gold, reused for the ★ favourite mark in a thread header and Notes
+   (chat.js, chatFavHTML) - not positioned like the tile corner above, just
+   sitting inline in a line of words */
+.fav { color: #ffce4a; }
+
+/* everything tappable answers the finger, which is most of the feel of a phone */
+.app:active, .row:active, .pick:active, .key:active, .slot:active { transform: scale(.96); }
+.row:active, .pick:active { background: #34313f; }
+/* somebody whose text is waiting for yours: the row is lit, so the one thing
+   on the list that wants an answer is the one thing you cannot miss */
+.row.hot { background: #2f4a7a; }
+
+/* An avatar is a colorized face glyph in a fixed box, so one recipe sits the
+   same at every size the phone draws it. The box is 1.4em wide because that is
+   what a Twemoji glyph measures: at 1em the head hung a sixth of its width out
+   of each side and sat on the first letter of the name next to it. */
+.av { display: inline-block; width: 1.4em; height: 1em; line-height: 1em; text-align: center; flex: none; }
+
+/* contact rows */
+.row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #26242f;
+    border-radius: 14px;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+/* a row that is only something to read: the dictionary's, which carry no tap
+   target at all (device.js, dictGroupHTML). One declaration takes away the
+   pointer cursor and the press shrink together, because neither :active nor a
+   hover cursor happens to an element the pointer does not reach. */
+.row.ro { pointer-events: none; }
+.row .t { flex: 1; min-width: 0; }
+.row .t b { font-size: 21px; font-weight: bold; }
+.row .t > span { color: #9d99ad; font-size: 17px; margin-left: 6px; }
+/* the mood line: a row is two lines now, so the second is drawn at a size
+   the faces can actually be read at (chat.js, chatMoodLine) */
+.mood { font-size: 26px; margin-top: 2px; }
+.row .f { text-align: center; font-size: 15px; color: #9d99ad; }
+/* the four hearts (chat.js, chatHearts), small enough to sit in one line */
+.row .f b { display: block; font-size: 17px; letter-spacing: 1px; }
+
+/* Chat. The thread scrolls on its own: it is a flex item, so without this its
+   messages spill up out of the box and over the header instead of scrolling.
+   The auto margin on the first one keeps a short conversation pinned to the
+   bottom, which justify-content cannot do without breaking the scroll. */
+.thread { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 200px; overflow-y: auto; }
+.thread > :first-child { margin-top: auto; }
+.list { flex: 1; min-height: 200px; overflow-y: auto; }
+.bub {
+    max-width: 62%;
+    padding: 8px 14px;
+    border-radius: 16px;
+    font-size: 38px;
+    line-height: 1.1;
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+}
+.bub.me { align-self: flex-end; background: #2f4a7a; }
+.bub.them { align-self: flex-start; background: #33303f; }
+/* the newest message lands, which is the only motion in a conversation */
+.thread > .bub:last-child { animation: pop .2s ease-out; }
+@keyframes pop { from { transform: scale(.7); opacity: 0; } }
+.bub u { position: relative; }
+.bub u s { position: absolute; right: -10px; bottom: -12px; font-size: 17px; }
+
+.compose { display: flex; align-items: center; gap: 10px; background: #24222e; border-radius: 14px; padding: 8px 12px; }
+.slot { width: 46px; height: 46px; border-radius: 10px; background: #1b1a24; font-size: 32px; text-align: center; line-height: 46px; cursor: pointer; }
+
+/* the keyboard: what you own, a row per club. A full club runs to 24 keys,
+   wider than the 540px phone, so a row wraps rather than overflow -
+   the label stays put as the first item and only the keys spill onto a
+   second line, still their usual size (chat.js, chatKeyboardHTML). The
+   journal and Notes reaction rows (chatReactionRows) wrap the same way. */
+.kb { display: flex; flex-direction: column; gap: 3px; }
+.kbrow { display: flex; align-items: center; gap: 2px; }
+.wrap { flex-wrap: wrap; }
+/* the notebook's reaction rows: each one a backed strip of its own, a little
+   apart from the next, so a tapback and the emoji that earned it read as one
+   line - the same strip on the card in Notes and in a thread's journal. The
+   tapback at full size, no keyboard-label gap. */
+.rr { background: #2f2c3d; border-radius: 8px; padding: 3px 8px; margin-top: 4px; }
+.rr > span { width: 30px; font-size: 22px; }
+/* Stats is a short list read at arm's length: bigger, centred */
+.stats .h.l { text-align: center; font-size: 25px; margin: 10px 0; }
+/* the collection wall, the one wrapped row with no label in front of it:
+   the emoji are the whole picture, so they sit centred under the counters */
+.stats + .wrap { justify-content: center; }
+.kbrow > span { width: 52px; font-size: 12px; color: #827f90; flex: none; }
+.key {
+    width: 36px;
+    height: 30px;
+    font-size: 22px;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.key.off { color: #0000; background: radial-gradient(#26242f 34%, #0000 36%); cursor: default; }
+
+/* the month: a row per week, seven days across */
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal b { text-align: center; font-size: 13px; color: #827f90; }
+.dy { background: #26242f; border-radius: 7px; height: 44px; display: grid; place-items: center; font-size: 17px; color: #8d8a9b; }
+/* the event glyph in a day cell - a bare span, because the class=e that used
+   to mark every emoji in the game styled nothing anywhere else and went in the
+   size pass: the font reaches them through the page, not through a class */
+.dy span { font-size: 24px; }
+.dy.now { background: #2f4a7a; color: #fff; }
+.dy.past { background: #1f1d29; color: #56536a; }
+
+.card { background: #26242f; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
+.card .t { flex: 1; }
+
+/* three offers as tiles - a club's at School and a place's on a trip - and
+   the exam's row of prompts (calendar.js activityHTML, calExamHTML; date.js
+   dateTripHTML). A tile that was not taken this week is greyed, and after
+   .pick:active so a finger does nothing to it. */
+.picks { display: flex; gap: 14px; justify-content: center; margin-top: 6px; }
+.pick { background: #26242f; border-radius: 14px; padding: 14px 8px 10px; width: 118px; text-align: center; cursor: pointer; }
+.pick b { display: block; font-size: 48px; }
+.pick.off { opacity: .35; cursor: default; transform: none; background: #26242f; }
+
+/* the endgame tableau */
+.tab { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 52px; }
+
+/* modal confirmation */
+#m {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#m > div { background: #2b2937; border-radius: 20px; padding: 26px 24px; width: 420px; text-align: center; }
+#m .btns { display: flex; gap: 14px; margin-top: 20px; }
+#m .btns .btn { flex: 1; }
+/* !important because the only two things that hide are #m and #t, and an id
+   rule beats a class one: without it the title screen never goes away */
+.hide { display: none !important; }
+/* still takes up its room, unlike .hide: the calendar's arrow past the end */
+.ghost { visibility: hidden; }
+
+/* the title screen fills the phone */
+#t { position: absolute; inset: 0; background: #17161f; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+#t .big { font-size: 150px; }
+#t h1 { font-size: 40px; letter-spacing: 1px; }
+#t .cast { display: flex; gap: 6px; margin: 14px 0; }
+.blink { animation: blink 1.2s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .25; } }
