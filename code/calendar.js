@@ -584,7 +584,7 @@ function calendarHTML()
             const day = calIsExam(week) ? 2 : 5;   // exams midweek, the rest on the weekend
             return [...Array(7)].map((u, d) =>
                 `<div class="dy ${week == gameWeek ? 'now' : week < gameWeek ? 'past' : ''}">` +
-                (on && d == day ? `<span>${on}</span>` : w*7 + d + 1) +
+                (on && d == day ? `<span>${domSafe(on)}</span>` : w*7 + d + 1) +
                 `</div>`).join('');
         }).join('') + `</div>` +
 

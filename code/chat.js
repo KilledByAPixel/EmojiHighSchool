@@ -121,7 +121,7 @@ function chatAffection(character) { return chatAffectionLadder[chatTier(characte
 function chatHearts(character)
 {
     const filled = 4 - chatTier(character);
-    return '❤️'.repeat(filled) + '🤍'.repeat(4 - filled);
+    return '❤️'.repeat(filled) + domSafe('🤍').repeat(4 - filled);
 }
 
 // the column on the right of a contact row: the hearts, and the rung's own

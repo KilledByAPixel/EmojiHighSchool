@@ -25,9 +25,9 @@ const randSign = () => randInt(2)*2 - 1;
 // The second slot is randomness, and playNote holds it at zero so a note is in
 // tune. Name it yourself if you want one sound to wobble; .005 is a hint of
 // chorus, .05 - ZzFX's own default - is four fifths of a semitone.
-let musicKick = [.35,0,80,,,.02,,,,,,,,2];
-let musicHat  = [.2,0,1e3,.01,,.01,4,5];
-let musicBass = [.2,0,40,,,.05,,.5,,,,,,,,,,.1,.1];
+let musicKick = [.35,0,80,.01,,.02,,,,,,,,2];
+let musicHat  = [.15,0,220,.01,,.01,4,5];
+let musicBass = [.2,0,30,,,,,.5,,,,,,,,,,.1,.1];
 
 // The harmony, and all of it: one number walks a step either way every four
 // bars and comes home every sixteen, and the bass plays whatever root that
@@ -62,36 +62,43 @@ const musicContexts =
 
 // which piece is playing, and where the piece has got to
 let musicContext = -1, musicTimer = 0;
-let musicBeat = 0, musicChord = 0;
+let musicBeat = 0, musicChord = 0, bassNote = 0;
 
 // the music switch, on its own key beside the one for sound effects (game.js)
 let musicEnabled = 1;
 
-// One beat. The whole form is modulo arithmetic on a beat count: the drums
-// kick states the pulse, the bass comes in at 32, the hat rests for the last
-// quarter of every 128, and the harmony comes home every 256.
+// One beat. The whole form is modulo arithmetic on a beat count, and it takes
+// 512 beats - over a minute - to come round: the bass opens alone at 32, the
+// kick joins at 128, the hat rests for the last 32 of every 256, and the
+// harmony comes home every 256. Nothing here is a bar count in disguise; the
+// parts enter and leave on their own modulos, which is why the loop does not
+// announce itself to somebody with the phone in a bag.
 function musicTick()
 {
     const [, roots, hat] = musicContexts[musicContext];
 
     // a new chord every four bars, walking a step either way, home every 256
     if (musicBeat%32 == 0)
-        musicChord = musicBeat%256 ? musicChord + randSign() : 0;
+        musicChord = bassNote = musicBeat%256 ? musicChord + randSign() : 0;
 
     // The hat, which is the part a piece can do without: it drops out for the
-    // last bar of every four so the loop breathes, and it steps out entirely
-    // on a date. The accent every other beat is what gives it its swing.
-    if (hat && musicBeat%128 < 96 && (musicBeat%2 == 0 || !randInt(9)))
-        playNote(musicHat, 0, ((musicBeat >> 1)%4 == 2 ? .4 : .2) - rand(.1));
+    // last eight bars of every sixty-four so the loop breathes, and it steps
+    // out entirely on a date. The accent every other beat is its swing.
+    if (hat && musicBeat%256 < 224 && (musicBeat%2 == 0 || !randInt(9)))
+        playNote(musicHat, 0, ((musicBeat >> 1)%4 == 2 ? .4 : .2) - rand(.2));
 
-    // the kick keeps time whatever else is happening
-    if (musicBeat%4 == 0 && musicBeat%128 < 64)
+    // The kick keeps time once it is in, and it is not in at the top: it sits
+    // out the first quarter of every 512 so the bass has the room to open,
+    // and rests the last quarter of every 128 inside that.
+    if (musicBeat%512 >= 128 && musicBeat%4 == 0 && musicBeat%128 < 96)
         playNote(musicKick, 0, ((musicBeat >> 1)%4 == 0 ? .5 : 1) - rand(.2));
 
-    // the bass, mostly on the beat and occasionally off it
-    if (musicBeat >= 32 &&
-        (musicBeat%2 == 0 && (musicBeat%8 == 0 || randInt(4)) || !randInt(9)))
-        playNote(musicBass, MUSIC_ROOTS[roots][mod(musicChord, 4)], 1);
+    // The bass, mostly on the beat and occasionally off it - and the only
+    // part playing until the kick arrives. bassNote walks up from the chord
+    // root a step at a time, so a held harmony still moves underneath.
+    if (musicBeat%512 >= 32 &&
+        (musicBeat%8 == 0 || !randInt(9) || musicBeat%256 < 196 && musicBeat%2 == 0 && randInt(4)))
+        playNote(musicBass, MUSIC_ROOTS[roots][mod(bassNote += randInt(2), 4)], 1);
 
     ++musicBeat;
 }

@@ -56,7 +56,7 @@ function deviceBarHTML()
             gameWeek + 1} of ${calWeeks}</span>` +
         tap('mute', 0, '', audioEnabled ? '🔊' : '🔇') +
         tap('tune', 0, '', musicEnabled ? '🎵' : '🔕') +
-        `<span>${weekActivityUsed && weekPhoneUsed ? '🪫' : '🔋'}</span>`;
+        `<span>${domSafe(weekActivityUsed && weekPhoneUsed ? '🪫' : '🔋')}</span>`;
 }
 
 // The way back, on every screen except home and the ones you cannot leave.
