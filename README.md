@@ -25,6 +25,10 @@ Created by Frank Force for JS13k 2026
 - **★** = An app with a slot you haven't used yet
 - **🔋** = The week still has something in it
 - **🔊 🎵** = Sound and music
+- **🌈 load Twemoji font** = the first thing on the home screen. Tap it once and the
+  whole game switches to Twemoji, and it remembers. Everything in a js13k entry has
+  to fit in the 13kb, and a font does not, so the game never fetches it unless you
+  ask - until you do, the emoji are whichever ones your own device draws.
 
 ## 📱 How to Play
 
@@ -54,5 +58,5 @@ Watch what they open with, keep an eye on their mood, and read 📓 Notes, which
 - Three endings, a yearbook, and a letter under a tree
 - Endless procedurally generated music
 - ZzFX sound effects
-- Twemoji art, so the cast looks the same on every machine
+- Twemoji art on request - one tap, and the cast looks the same on every machine
 - All written from scratch in vanilla JS
