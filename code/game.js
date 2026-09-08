@@ -68,10 +68,10 @@ function gameInit()
 // A fresh school year on this seed - same seed, same opinions, same puzzle.
 // The keyboard is dealt first and the cast second, and initCharacters reseeds:
 // so a seed's puzzle is the same puzzle whatever else the seed was spent on.
-// The year opens quiet (GDD 9): it used to open with somebody already texting,
-// which put a message on the phone before the player knew what a message was.
-// The first opener now arrives on the ordinary draw, once somebody has a
-// reason to reach out.
+// The year opens quiet (GDD 9): opening with somebody already texting puts a
+// message on the phone before the player knows what a message is. The first
+// opener arrives on the ordinary draw, once somebody has a reason to reach
+// out.
 function gameStart(seed)
 {
     gameSeed = seed;
@@ -112,11 +112,10 @@ const gameSaveKey = 'emojiHigh10';
 
 // The three little switches - sound, music, and the emoji font (dom.js) -
 // live on their own tiny keys, read once at boot and written once per tap,
-// never through gameSave(). The sound one used to piggyback on the week
-// snapshot, but that was the only thing left calling gameSave() outside
-// gameStart and calEndWeek, and it sits on almost every screen: with the
-// lean v2 shape (GDD 13), a mid-week mute+reload would have refunded this
-// week's spent actions and dropped a booked date - repeatably, for free.
+// never through gameSave(). Piggybacking one of them on the week snapshot
+// would put a gameSave() call on almost every screen, and only gameStart and
+// calEndWeek may write one (GDD 13): a mid-week mute and reload would refund
+// the week's spent actions and drop a booked date, repeatably, for free.
 // The two sound switches default ON and the font defaults OFF: an absent 'f'
 // is the js13k-legal state, and only a tap on the title screen ever writes it.
 // (A bitfield over one key was tried and measured at a single byte, which is
@@ -197,12 +196,11 @@ function gameLoad()
                 character.prompt, character.reactions, character.fav,
                 character.mood, thread] = data;
 
-            // The conversation comes back whole (GDD 13). It used to be
-            // thrown away as flavour, with the one unanswered text rebuilt
-            // from the saved prompt - so closing the tab lost the record of
-            // the year the player had actually played: what they had tried on
-            // somebody, and what every bit of it earned. That record is half
-            // of what a thread is for (GDD 6).
+            // The conversation comes back whole (GDD 13), not rebuilt from
+            // the saved prompt: the thread is the record of the year the
+            // player actually played - what they tried on somebody and what
+            // every bit of it earned - and that is half of what it is for
+            // (GDD 6).
             character.thread = thread.map(m => typeof m == 'string' ?
                 {them: 1, text: m} :
                 {mine: 1, emojis: m[0],
@@ -340,8 +338,8 @@ function gameAction(action, arg)
     else if (action == 'confess')
         endCandidate = characters[arg];
     // Handing the letter over is final, and is saved on the spot: it is the
-    // one guess in the game with no second go at it, and a reload used to be
-    // exactly that (GDD 11, 13). endWith is either endCandidate or 0, so && is
+    // one guess in the game with no second go at it, and an unsaved reload
+    // would be exactly that (GDD 11, 13). endWith is either endCandidate or 0, so && is
     // enough to write down whether it landed; going home alone needs only the
     // first half of the pair.
     else if (action == 'letter')

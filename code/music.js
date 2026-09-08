@@ -18,9 +18,8 @@ const mod = (a, b) => (a%b + b)%b;
 const randSign = () => randInt(2)*2 - 1;
 
 // The three instruments, as full ZzFX parameter arrays - paste from the Sound
-// Designer and it works. There was a lead over this, played twice an octave
-// apart, and it went in the size pass: a phone in a school bag does not need
-// a tune, and a kick, a hat and a bass are what "chill" is made of.
+// Designer and it works. A kick, a hat and a bass are the whole band on
+// purpose: a phone in a school bag does not need a tune over the top.
 //
 // The second slot is randomness, and playNote holds it at zero so a note is in
 // tune. Name it yourself if you want one sound to wobble; .005 is a hint of
@@ -35,11 +34,10 @@ let musicBass = [.2,0,30,,,,,.5,,,,,,,,,,.1,.1];
 // fifth make a major room, the tonic, the minor third and the fifth a darker
 // one, which is what an exam gets.
 //
-// A lead used to play over these, and then the two lists had to be chosen so
-// that every root plus every melody note stayed in the key. With the lead gone
-// the roots ARE the music, so anything here is in key by definition - but if a
-// tune ever comes back, that constraint comes back with it, and test/music.mjs
-// is where it is written down.
+// With no lead over them the roots ARE the music, so anything here is in key
+// by definition. Put a melody back and the two lists have to be chosen so
+// every root plus every melody note stays in the key - test/music.mjs is
+// where that constraint is written down.
 const MUSIC_ROOTS =
 [
     [0, 5, 7, 5],   // 0 major - the everyday piece, and a date

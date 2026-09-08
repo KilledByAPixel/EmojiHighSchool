@@ -39,10 +39,8 @@ let tripPlace = '';    // where the weekend is going: set on its first tap, kept
 // same places on the grid. Some places only exist in one season and two only
 // on their one week of the year, and none of them JOINS the list - each one
 // stands in for a permanent place and takes its tile (network.js, netPlaces).
-// So the weekend is the same shaped decision all year, a season is a trade
-// rather than a free extra tile, and the ragged last row is gone: it used to
-// open six places for eighteen weeks, seven for twenty, and eight for the two
-// that have both a season and an event.
+// So the weekend is the same shaped decision all year and a season is a
+// trade rather than a free extra tile - six tiles, never a ragged last row.
 function dateLocations()
 {
     const open = Object.keys(netPlaces).filter(location =>
@@ -89,9 +87,9 @@ function dateSchedule(character, location)
 
     // The ask is the week's one phone action, so it spends it exactly the way
     // a text does: it counts as hearing from you (GDD 3), and it answers a
-    // text of theirs that was waiting (GDD 9). It used to take only the slot,
-    // which left somebody you had just made plans with lit on the contact
-    // list as waiting for a text the week no longer had room for.
+    // text of theirs that was waiting (GDD 9). Taking only the slot would
+    // leave somebody you had just made plans with lit on the contact list,
+    // waiting for a text the week no longer has room for.
     chatSpend(character);
 
     // and it reads as the conversation it was: where you asked them to go,

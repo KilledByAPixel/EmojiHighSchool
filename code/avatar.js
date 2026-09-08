@@ -16,10 +16,9 @@
 //
 // It hands back the one thing anybody ever wanted from it - draw me at this
 // many pixels - so the recipe is built once for the year instead of on every
-// render, and a call site reads c.avatar(56) instead of c.avatar.html(56).
-// It was a class with five fields and an html() method; nothing outside this
-// file ever read a field. The box is an em square (see .av), so one recipe
-// sits the same at every size the phone draws it.
+// render, and a call site reads c.avatar(56) rather than reaching into it.
+// The box is an em square (see .av), so one recipe sits the same at every
+// size the phone draws it.
 function avatar(face, hue, saturate, brightness, tilt)
 {
     const look = `filter:sepia(1) saturate(${saturate}) hue-rotate(${hue}deg) ` +

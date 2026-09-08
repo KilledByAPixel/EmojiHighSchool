@@ -26,14 +26,11 @@ function scoreTaste(emoji, opinions)
 }
 
 // How much one emoji answers a list of attribute words (GDD 4) 📏: one point
-// a word it carries exactly, club colour size and tag alike. This used to pay
-// 2 for an exact colour or size and 1 for a near one, and test/sim.mjs said
-// that made answering them worth more than knowing them - the emoji a player
-// picked on overlap alone carried a taste of 2 against a worked-out pick's 3,
-// and a player who knew nothing finished the year within 2% of one who knew
-// the public love (587 against 596) and 18% behind one who knew everything
-// (718). Overlap is public and taste has to be deduced, so overlap now runs
-// 0 to about 5 and a strong opinion runs to 6.
+// a word it carries exactly, club colour and tag alike. Paying more for an
+// exact colour than a near one makes answering a prompt worth more than
+// knowing the person, which is backwards: overlap is public and taste has to
+// be deduced. So it is a flat point a word, overlap runs 0 to about 5, and a
+// strong opinion runs to 6.
 function scoreOverlapAttrs(emoji, words)
 {
     const rec = netByEmoji[emoji];

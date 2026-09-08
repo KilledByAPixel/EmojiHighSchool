@@ -95,8 +95,8 @@ function zzfx(volume = 1, randomness = .05, frequency = 220, attack = 0,
 }
 
 // The game's sounds, in ZzFX's order. The volumes read .18 and .15 rather than
-// ZzFX's 1 because the master gain node they used to run through - one more
-// node per sound, doing nothing but multiplying by .3 - is folded into them.
+// ZzFX's 1 because the master gain node is folded into them - one more node
+// per sound, doing nothing but multiplying by .3.
 const soundTap  = [.4,,440,,,.04,,4,9];
 const soundGood = [.2,,440,,,.4,1,3,,,220,.05];
 const soundBad  = [.2,,160,,,.4,2,,,,-90,.05];

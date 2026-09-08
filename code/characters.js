@@ -13,10 +13,10 @@
 // none of them in the network, so a face is never also something you could
 // send - faces.html is the sheet they were picked from.
 const characterFaces = '🦊🐺🦝🐯🦁🦌🦍🐻🐹🐷🐨🐭🐰🐵🐼🐸🐙🐴🐗🐮🐔🐣';
-// Sixteen, six dealt per run. Bex and Lux were cut on 2026-08-28: any two
-// given names share a cast about one run in ten, and four of the eighteen
-// ended in x - Rex and Bex differed by a letter, and Nyx and Lux were the
-// next pair down. Two x names left, which is a cluster the eye can hold.
+// Sixteen, six dealt per run. Any two of them share a cast about one run in
+// ten, so names that differ by a letter or rhyme with each other are kept
+// out of the pool - two of these end in x, which is as far as that goes
+// before a reader stops telling them apart.
 const characterNames = 'Kai Ada Iris Rex Nyx Mo Zed Juno Pip Sol Ivy Ash Tao Finn Uma Cy';
 
 // Role and the one word the role guarantees - the archetypes, in roster
@@ -74,12 +74,10 @@ function charMet() { return cast().slice(0, gameWeek + 3); }
 // running is not the same face twice, which is the whole of why it is a draw
 // and not a lookup. Seeded, so revisiting a picker cannot reroll it.
 //
-// It opened on a coin flip until 2026-09-08 - half the afternoons had nobody
-// on them. The variety was never the flip's doing, it was the draw's, and
-// the flip was deleting half of the one contact in the week that costs no
-// text: the good ending ran 12 of 60 with it and 42 without (GDD 15). It
-// also threw away the half of the game where knowing somebody's taste buys
-// you the meeting - what you learn is how you aim this.
+// Somebody is always there, and that is deliberate: a coin flip over the top
+// of this deletes half of the one contact in the week that costs no text,
+// and half of the reason to work anybody's taste out. What you learn is how
+// you aim this. Measured in GDD 15.
 //
 // The two callers differ only in what `likes` means - taste for an emoji at
 // school, the strongest opinion on a place's own words on a trip - so the

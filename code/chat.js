@@ -67,20 +67,13 @@ function chatLand(c, total)
 // The numbers are set against the length of the year, not against one good
 // text, and they come out of test/sim.mjs playing 60 seeded years per kind of
 // player: a worked-out text is worth 18 to 20 and a whole date about 27, so
-// 20 is one good message, 90 is four or five, 500 is a term of dates, and 750
-// is a school year of courtship - week 35 in 52 years out of 60 for a player
-// who worked out all five opinions, 22 for one going by the role's word alone
-// and none for one going by nothing, with mood at a quarter (GDD 3) and the
-// top two rungs due a re-measure since. 90 is also the bar the good ending
-// asks of the other five (GDD 11), which is what fixes it there: it is what a
-// player who courts one classmate and keeps the rest warm actually gets them
-// to, in about half of years.
-// 850 since 2026-08-28 📏: with 🥰, both run-ins and 45 words a worked-out
-// player cleared 750 in 57 years of 60 and was there by week 25, with fifteen
-// weeks of nothing to climb; the sim's rung table (GDD 15) puts 850 at
-// 55 / 28 / 1 for worked-out / role-only / nothing and 28 for the whole-class
-// player's best ending - in love in the last quarter of the year for a
-// perfect player, later for a person. The designer's call, ahead of playtests.
+// 20 is one good message, 90 is four or five, 500 is a term of dates, and 850
+// is a school year of courtship. 90 is also the bar the good ending asks of
+// the other five (GDD 11), which is what fixes it there: it is what a player
+// who courts one classmate and keeps the rest warm actually gets them to, in
+// about half of years. 850 puts in love in the last quarter of the year for a
+// player who has worked somebody out, and later for everybody else - which is
+// the point of it being the top rung. Measured in GDD 15.
 const chatAffectionLadder =
 [
     [850, 'in love'],
@@ -508,7 +501,7 @@ function chatHTML()
     // The other thing a phone can do: spend the whole weekend on one person -
     // but not on a stranger, and not twice. There is one Saturday, so once it
     // is spoken for the offer goes away rather than quietly replacing the
-    // person you already asked, which is what it used to do on Golden Week.
+    // person you already asked.
     // dateAskable (date.js) owns the whole gate - stranger, cooldown, and the
     // last week, which has no Saturday in it at all, only the tree. The lines
     // below only say why the offer is missing; they never decide it - so the
@@ -536,8 +529,7 @@ function chatThreadHTML()
     // the tapback shows taste only: what they think of the thing itself is the
     // reusable fact, and overlap belongs to the message, not the emoji (GDD 4)
     // - and ❓ is never in the bubble: the question is about the emoji beside it
-    // All of it, oldest first. It used to draw the last six, which is about
-    // one week of exchanges: the thread is the notebook the game asks the
+    // All of it, oldest first: the thread is the notebook the game asks the
     // player to keep (GDD 6), and gameRender scrolls it to the newest message
     // on every repaint, so the rest of the year costs nothing to leave behind
     // it to scroll back through.
@@ -550,8 +542,7 @@ function chatThreadHTML()
 
 // The notebook inside a thread (📓): what you know about this one person,
 // the very block their Notes card prints (chatNotesBody), so the two can
-// never disagree - it used to hold only the reactions, and a ❓ answered in
-// the thread was nowhere in it. It reads told opinions and c.reactions, both
+// never disagree. It reads told opinions and c.reactions, both of them
 // saved, so unlike a scan of the thread it survives a reload (GDD 13).
 function chatJournalHTML()
 {

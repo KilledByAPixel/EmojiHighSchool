@@ -45,8 +45,8 @@ function playerCount() { return Object.keys(playerKeyboard).length - playerFaces
 // Three offers out of a pool, rotated by a spin that is stable for the week,
 // so leaving a page and coming back cannot reroll them. What a club teaches
 // (calendar.js, activityChoices) and what a place sends you home with
-// (date.js, dateTrip) are the same draw off two different shelves, and were
-// two copies of this until the size pass. Anything already owned drops out -
+// (date.js, dateTrip) are the same draw off two different shelves.
+// Anything already owned drops out -
 // except the one just kept, which stays on the shelf until Monday so the page
 // can show what was taken among what was not.
 function playerOffers(pool, spin, keep = 0)

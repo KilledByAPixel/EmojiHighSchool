@@ -38,10 +38,9 @@ function deviceDate()
 // The status bar, above every app: the date, the season, the week, the two
 // switches and the battery.
 //
-// The week sits in the middle, in what used to be an empty span whose only job
-// was to push the switches to the right. It grows into the gap instead now and
-// carries the line the home screen used to print - so the home screen does not
-// have to say it, and every other screen gets it for nothing.
+// The week sits in the middle, growing into the gap that would otherwise be
+// spacing the switches out to the right. It carries what the home screen
+// would have to say itself, and every other screen gets it for nothing.
 //
 // The battery is the week itself: 🔋 while there is still something to do, 🪫
 // once the club and the text are both spent and the weekend is all that is
@@ -207,11 +206,11 @@ function dictHTML()
 // which already lives in Messages as the affection foot on every row (GDD 5).
 // The Stats app (GDD 12): the run at a glance - the week, how the texts have
 // landed, the weekend's tally, the exams, how much of the library is learned,
-// the seed, and then the collection itself. The row per classmate that used to
-// sit under all that went in the size pass: their hearts and their rung are on
-// every row of Messages already, which is where somebody looking for them
-// looks. Only the two text counters are kept for this screen; the rest is read
-// off what the game already holds.
+// the seed, and then the collection itself. Deliberately no row per
+// classmate: their hearts and their rung are on every row of Messages
+// already, which is where somebody looking for them looks. Only the two text
+// counters are kept for this screen; the rest is read off what the game
+// already holds.
 function statsHTML()
 {
     const [texts, dates, gifts, good, bad] = gameStats;

@@ -26,17 +26,16 @@ const CAL_INCOMING_GAP = 2;   // 📏 weeks between an unprompted incoming
 // what lets a week be a row of seven days instead of a numbered box (GDD 9)
 const calMonthWeeks = [4,3,3,4,3,3,4,3,3,4,3,3];
 
-// Exams (GDD 8): five questions, pass on three, graded within this margin of
+// Exams (GDD 8): five questions, pass on three, graded within a margin of
 // what your own keyboard could best have answered. A player who answers the
 // legible way - the one of mine that carries the most of what these share -
-// lands within 2 on 76% of questions and within 3 on 89% (test/sim.mjs, 60
-// years, five questions). At 2 a worked-out player passes 114 sittings of
-// 120 and both exams in 54 years of 60, so the exam now decides the good
-// ending about one year in ten; at 3 it was 118 of 120 and 58 of 60, and
-// decided nothing. The designer's call: three questions at 3 was no test.
-const CAL_EXAM_QUESTIONS = 5;   // 🔸 five questions to a sitting (three until 2026-08-28: an exam is an event, and three was over before it started)
+// lands within 2 on 76% of questions and within 3 on 89%. At a margin of 2
+// a worked-out player passes 114 sittings of 120 and both exams in 54 years
+// of 60, so the exam decides the good ending about one year in ten; a looser
+// margin decided nothing at all. The tuning table is GDD 15.
+const CAL_EXAM_QUESTIONS = 5;   // 🔸 five questions to a sitting
 const CAL_EXAM_PASS = 3;        // 🔸 pass on this many of the five
-const CAL_EXAM_MARGIN = 2;      // 📏 how far under your own best still counts (3 until 2026-08-28: five of five on the first sitting was no test)
+const CAL_EXAM_MARGIN = 2;      // 📏 how far under your own best still counts
 
 // prompts per question, 0-based: one, two, three, in both exams - one more
 // thing that has to be in common narrows the search without changing the
@@ -178,13 +177,14 @@ function calExamDraw(n)
 {
     // Only out of what you do NOT own. The exam is a test on the library, not
     // on your own shelf - and drawing from the rest of it means an answer can
-    // never be one of the prompts, so the rule that used to say so is gone,
-    // along with the greyed-out key and the line explaining it.
+    // never be one of the prompts - so no rule has to say so, and no key on
+    // the keyboard has to be greyed out and explained.
     //
     // The pool cannot run dry, measured rather than guessed: a greedy
     // collector - a School pick every week, a trip every weekend rather than
-    // a date, and every Valentine's present - owns 80 of the 152 by the
-    // second exam on week 36, which leaves 72 to draw three prompts from.
+    // a date, and every Valentine's present - owns about 80 of the library by
+    // the second exam on week 36, which leaves seventy-odd to draw three
+    // prompts from.
     const pool = netLib.filter(rec => !playerOwns(rec.e));
     while (1)
     {
@@ -205,9 +205,8 @@ function calExamBuild()
 }
 
 // a legal exam answer: owned, and never one of the three tone faces (GDD 8).
-// It used to exclude this question's own prompts as well, and the screen had
-// to say so; the prompts are drawn from what you do NOT own now, so the case
-// cannot arise and neither the check nor the sentence has to exist.
+// The question's own prompts need no exclusion - they are drawn from what
+// you do NOT own, so an answer can never be one of them.
 function calExamKeyLive(emoji)
 {
     return playerOwns(emoji) && netByEmoji[emoji];
@@ -673,10 +672,9 @@ function activityChoices(club)
 // overlap it pays is the one the thread actually shows (GDD 4). Scored as a
 // text with no face on it, through the one scorer every other exchange uses
 // (GDD 4): taste weighted in the total, raw taste in the tapback, the fact in
-// Notes the same way - and it counts as hearing from you (GDD 3). It used to
-// pay a flat 1 + taste, unweighted, and show that through a ladder calibrated
-// for weighted totals - a free encounter that read colder than the same
-// emoji said out loud. Returns the face it landed on, for the card that says.
+// Notes the same way - and it counts as hearing from you (GDD 3). Scoring it
+// any other way makes a free encounter read colder than the same emoji said
+// out loud. Returns the face it landed on, for the card that says.
 function calRunIn(c, emoji)
 {
     const result = chatScoreSend(c, [emoji], '');
