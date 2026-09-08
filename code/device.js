@@ -109,6 +109,27 @@ function homeHTML()
             !calPhoneAvailable() && weekActivityUsed ?
             hint('nothing left this week - time for the weekend') : '') +
 
+        (dateContact ? hint(`Saturday: ${dateName(dateLocation)} with ` +
+            `${dateContact.name}`) : '') +
+
+        // The way out of the week, and it sits directly under the apps: the
+        // cards below are a week's worth of news and on a loud week they run
+        // past the bottom of the phone, which left the one control that ends
+        // the week as the thing you had to scroll to find. Everything under
+        // it is for reading; this is the only thing on the screen that moves
+        // the year on, so it goes where the thumb already is.
+        //
+        // It reads as the thing to do next once the week is spent, and as the
+        // thing you are probably not ready for while it is not - the same
+        // button either way, greyed while a slot is unspent, and gameAction
+        // asks first then. A date already booked always wins - the weekend is
+        // one or the other, never both (GDD 10) - otherwise it is a trip,
+        // alone, and never lost: skipping ahead costs the slots, not the
+        // Saturday.
+        button('week', 0, gameWeek >= calWeeks - 1 ? '🌳 go to graduation' :
+            dateContact ? `${dateLocation} go on the date` : '🧳 go out for the weekend',
+            homeUnspent().length ? 'off' : 'go') +
+
         // The emoji font, which js13k will not let the game fetch for itself
         // (GDD 2). The offer leads the cards every week until it is taken,
         // because a phone made of nothing but emoji is the wrong place to
@@ -125,25 +146,17 @@ function homeHTML()
         // the reminders, under the apps all week: what the week is, what
         // happened over the weekend, and who you ran into at a club
         calRemindersHTML() +
-        // what you showed them at their club, and - the point of the card -
-        // how it landed, which is a whole reaction earned for nothing
+        // Who turned up where you went, what you showed them, and - the point
+        // of the card - how it landed, which is a whole reaction earned for
+        // nothing. The club named is the one YOU spent the week at, read off
+        // the emoji you learned there: the encounter is a draw over everyone
+        // you have met (GDD 7), so the face beside it is usually not the one
+        // whose own club this is - and the night owl's word is not a club at
+        // all, so hers would have left the sentence with a hole in it.
         (activityMet ? card(activityMet[0].avatar(38),
-            `ran into ${activityMet[0].name} at ${activityMet[0].club} club`,
-            `${glyph(activityMet[1] + ' ' + activityMet[2], 22)} - free, ` +
-            `and in your chat`) : '') +
-
-        (dateContact ? hint(`Saturday: ${dateName(dateLocation)} with ` +
-            `${dateContact.name}`) : '') +
-
-        // the weekend reads as the thing to do next once the week is spent, and
-        // as the thing you are probably not ready for while it is not - the
-        // same button either way, greyed while a slot is unspent, and gameAction
-        // asks first then. A date already booked always wins - the weekend is
-        // one or the other, never both (GDD 10) - otherwise it is a trip, alone,
-        // and never lost: skipping ahead costs the slots, not the Saturday.
-        button('week', 0, gameWeek >= calWeeks - 1 ? '🌳 go to graduation' :
-            dateContact ? `${dateLocation} go on the date` : '🧳 go out for the weekend',
-            homeUnspent().length ? 'off' : 'go');
+            `ran into ${activityMet[0].name} at ${netByEmoji[activityMet[1]].club} club`,
+            `${glyph(activityMet[1] + ' ' + activityMet[2], 22)} - ` +
+            `see it in your chat`) : '');
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,7 +183,7 @@ function dictGroupHTML(pick, word)
     const missing = group.length - owned.length;
     return `<h2>${word}</h2>` +
         owned.map(r => `<div class="row ro">` + iconLine(r.e,
-            [r.club, r.colour, r.size, r.tags.join(', ')].filter(String).join(' · ')) +
+            [r.club, r.colour, r.tags.join(', ')].filter(String).join(' · ')) +
             `</div>`).join('') +
         (missing ? iconLine('▫️', `${missing} more to find`) : '');
 }
@@ -234,8 +247,8 @@ function confirmHTML()
             <p style="font-size:44px">🎁</p>
             <h1>Give this away?</h1>
             ${hint(`Worth ×${CHAT_GIFT_MULT} what saying it is.`)}
-            ${hint('It leaves your keyboard for good - gone forever, no take-backs.')}
-            <div class=btns>${button('cancel', 0, 'not yet')}
+            ${hint('It leaves your keyboard for good.')}
+            <div class=btns>${button('cancel', 0, 'cancel', 'off')}
                 ${button('giftgo', 0, 'give it', 'go')}</div>
         </div>`;
 
@@ -245,7 +258,7 @@ function confirmHTML()
         <p style="font-size:44px">🛌</p>
         <h1>Skip to the weekend?</h1>
         ${hint('You still have ' + homeUnspent().join(' and '))}
-        <div class=btns>${button('cancel', 0, 'not yet')}
+        <div class=btns>${button('cancel', 0, 'cancel', 'off')}
             ${button('endweek', 0, 'skip ahead', 'go')}</div>
     </div>`;
 }

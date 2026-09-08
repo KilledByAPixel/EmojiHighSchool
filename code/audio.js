@@ -44,6 +44,14 @@ function zzfx(volume = 1, randomness = .05, frequency = 220, attack = 0,
     deltaSlide, pitchJump = 0, pitchJumpTime = 0, repeatTime,
     noise = 0, modulation, bitCrush, delay, sustainVolume = 1, decay = 0)
 {
+    // hand the samples to the audio hardware
+    audioContext = audioContext || new AudioContext;
+    if (audioContext.state != 'running')
+    {
+        audioContext.resume();
+        return;
+    }
+
     const PI2 = Math.PI*2, sampleRate = audioSampleRate;
     let b = [], t = 0, i = 0, j = 1, s = 0, f, length;
 
@@ -78,11 +86,6 @@ function zzfx(volume = 1, randomness = .05, frequency = 220, attack = 0,
         if (j && ++j > pitchJumpTime)                   // pitch jump
             frequency += pitchJump, j = 0;
     }
-
-    // hand the samples to the audio hardware
-    audioContext = audioContext || new AudioContext;
-    if (audioContext.state != 'running')
-        audioContext.resume();
     const buffer = audioContext.createBuffer(1, b.length, sampleRate);
     buffer.getChannelData(0).set(b);
     const source = audioContext.createBufferSource();

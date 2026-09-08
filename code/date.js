@@ -302,15 +302,14 @@ function dateTripPlaces()
     return dateLocations().filter(place => dateTrip(place).length);
 }
 
-// Somebody may be there (GDD 10): whoever loves what the place favours most
-// - a real love, +2 or better - so where you go is also a probe, and a
-// no-show is evidence too. Deterministic on purpose: a coin flip on a contact
-// throws half of it away (GDD 15), and a rule can be planned around.
+// Somebody is there (GDD 10): the same draw school runs, weighted by the
+// strongest thing each of them feels about what the place is for. Where you
+// go tilts who turns up without ever settling it - the beach is likelier to
+// hand you whoever loves `sea`, and never certain to.
 function dateTripWho(place)
 {
-    const love = c => max(...netPlaces[place][1].map(word =>
-        (c.opinions.find(([a]) => a == word) || [0, 0])[1]));
-    return charMet().filter(c => love(c) >= 2).sort((a, b) => love(b) - love(a))[0];
+    return charEncounter(c => max(...netPlaces[place][1].map(word =>
+        (c.opinions.find(([a]) => a == word) || [0, 0])[1])));
 }
 
 // picking one is the whole decision, the same verb as school (GDD 10) - and

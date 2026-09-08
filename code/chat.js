@@ -103,6 +103,17 @@ function chatOpen(character)
     chatJournalOpen = false;
 }
 
+// A classmate can teach an emoji by showing it in a message. Gifts and trips
+// use their own cards; this records the ordinary text-learning moment.
+function chatLearn(character, emoji)
+{
+    if (netByEmoji[emoji] && !playerOwns(emoji))
+    {
+        playerUnlock(emoji);
+        calLearned.push([character.idx, emoji]);
+    }
+}
+
 // where they are on the ladder: 0 in love, 2 a friend, 4 a stranger. Anything
 // that asks "do they like me enough for this yet" asks this, so the ladder
 // stays the only place those numbers live.
@@ -198,6 +209,7 @@ function chatIncoming(character, cold)
 {
     character.incoming = cold ? 2 : 1;
     character.prompt = scorePrompt(character.opinions);
+    chatLearn(character, character.prompt);
     character.thread.push({them: 1, text: chatOpener(character) + character.prompt});
 }
 
@@ -366,9 +378,10 @@ function chatSend()
     // the one the thread was showing when the message was written.
     // a ❓ gets the why in place of their prompt, which still re-rolls for the row
     const why = ask ? ' 💭 ' + chatWhy(chatContact, sent[0]) : '';
-    chatContact.prompt = scorePrompt(chatContact.opinions);
+    chatContact.prompt = scorePrompt(chatContact.opinions, chatContact.prompt, 1);
     chatPost(chatContact, sent, result, {text: scoreFace(result.total) +
         (why || (chatContact.prompt ? ' ' + chatContact.prompt : ''))});
+    chatLearn(chatContact, chatContact.prompt);
 
     chatSpend(chatContact);
     chatCompose = [];
@@ -423,7 +436,7 @@ function chatGift()
 
     playerGive(chatContact.seat, emoji, gameWeek);
     chatPost(chatContact, [emoji], {parts: [{e: emoji, taste}], total: score},
-        {face: scoreFace(score)});
+        {text: scoreFace(score)});
     chatContact.affection += score;
     chatLand(chatContact, score);
 
@@ -523,11 +536,16 @@ function chatThreadHTML()
     // the tapback shows taste only: what they think of the thing itself is the
     // reusable fact, and overlap belongs to the message, not the emoji (GDD 4)
     // - and ❓ is never in the bubble: the question is about the emoji beside it
-    return `<div class=thread>` + thread.slice(-6).map(msg => msg.mine ?
+    // All of it, oldest first. It used to draw the last six, which is about
+    // one week of exchanges: the thread is the notebook the game asks the
+    // player to keep (GDD 6), and gameRender scrolls it to the newest message
+    // on every repaint, so the rest of the year costs nothing to leave behind
+    // it to scroll back through.
+    return `<div class=thread>` + thread.map(msg => msg.mine ?
         `<div class="bub me">` + msg.emojis.map((emoji, e) =>
             `<u>${emoji}${msg.parts[e] ? '<s>' + chatTapback(msg.parts[e].taste) + '</s>' :
                 ''}</u>`).join('') + `</div>` :
-        `<div class="bub them">${msg.text || msg.face}</div>`).join('') + `</div>`;
+        `<div class="bub them">${msg.text}</div>`).join('') + `</div>`;
 }
 
 // The notebook inside a thread (📓): what you know about this one person,

@@ -6,7 +6,7 @@
 const SCORE_INF = 99;
 
 // distance from an emoji to one attribute word (GDD 3): exact 0; colour is
-// neighbour-or-nothing; size walks the line; club and tag are hit or miss
+// neighbour-or-nothing; club and tag are hit or miss
 function scoreDist(rec, word)
 {
     const kind = netAttrKind(word);
@@ -14,7 +14,7 @@ function scoreDist(rec, word)
     if (kind == 3) return rec.tags.includes(word) ? 0 : SCORE_INF;
     if (kind == 1) return rec.colour == word ? 0 :
         netIsNear(word, rec.colour) ? 1 : SCORE_INF;
-    return abs(netSizes.indexOf(rec.size) - netSizes.indexOf(word));
+    return SCORE_INF;
 }
 
 // taste = for each opinion, its strength less how far away the emoji is
@@ -44,7 +44,7 @@ function scoreOverlapAttrs(emoji, words)
 function scoreOverlap(emojiA, emojiB)
 {
     const b = netByEmoji[emojiB];
-    return scoreOverlapAttrs(emojiA, [b.club, b.colour, b.size, ...b.tags]);
+    return scoreOverlapAttrs(emojiA, [b.club, b.colour, ...b.tags]);
 }
 
 // What one point of taste is worth against one point of overlap (GDD 4) 📏.
@@ -103,14 +103,14 @@ function scoreValidate(opinions)
         rated.filter(t => t <= -SCORE_GOOD).length >= SCORE_SPREAD;
 }
 
-// Five ranked opinions, medium excluded, re-rolled until the puzzle is worth
+// Five ranked opinions, re-rolled until the puzzle is worth
 // solving (GDD 3). The role's own word is guaranteed one of the two strongest
 // loves - the +3 or the +2, a coin's choice - so "the gamer" never lies about
 // games, and never says which rung it sits on either. An empty word rolls
 // all five free.
 function scoreRollOpinions(word)
 {
-    const pool = netAttrs.filter(a => a != 'medium' && a != word);
+    const pool = netAttrs.filter(a => a != word);
     while (1)
     {
         const chosen = [], at = netRandInt(2);
@@ -124,16 +124,39 @@ function scoreRollOpinions(word)
     }
 }
 
-// what they open with: a weighted draw from everything they like, biased
-// toward the higher scores but never simply their best (GDD 5)
-function scorePrompt(opinions)
+// what they open with: a weighted draw from what they like, biased toward the
+// higher scores but never simply their best. The known/new coin keeps replies
+// from teaching too quickly while still making a new emoji an ordinary thing
+// to receive (GDD 5).
+function scorePrompt(opinions, avoid = '', split = false)
 {
-    const pool = [];
+    if (!split)
+    {
+        const pool = [];
+        for (const r of netLib)
+        {
+            if (r.e == avoid)
+                continue;
+            const t = scoreTaste(r.e, opinions);
+            for (let i = 1; i < t; ++i) pool.push(r.e);
+        }
+        return pool.length ? netPick(pool) : avoid || netPick(netLib).e;
+    }
+
+    const known = [], fresh = [];
     for (const r of netLib)
     {
+        if (r.e == avoid)
+            continue;
         const t = scoreTaste(r.e, opinions);
-        for (let i = 1; i < t; ++i) pool.push(r.e);
+        const owned = typeof playerOwns == 'function' && playerOwns(r.e);
+        for (let i = 1; i < t; ++i)
+            (owned ? known : fresh).push(r.e);
     }
+    if (!known.length && !fresh.length)
+        return avoid || netPick(netLib).e;
+    const pool = known.length && fresh.length ?
+        netPick([known, fresh]) : known.length ? known : fresh;
     return netPick(pool);
 }
 

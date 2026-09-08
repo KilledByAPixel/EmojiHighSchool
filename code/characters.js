@@ -20,8 +20,7 @@ const characterFaces = '🦊🐺🦝🐯🦁🦌🦍🐻🐹🐷🐨🐭🐰🐵
 const characterNames = 'Kai Ada Iris Rex Nyx Mo Zed Juno Pip Sol Ivy Ash Tao Finn Uma Cy';
 
 // Role and the one word the role guarantees - the archetypes, in roster
-// order. The word is one of their two strongest loves, always (GDD 3), and
-// where it is a club it is also where you run into them. Each also has a
+// order. The word is one of their two strongest loves, always (GDD 3). Each also has a
 // quirk, keyed on this index and never printed (GDD 3): the jock sweats
 // exams (gloomy on exam weeks) and owns sports day, the bookworm lives for
 // grades (bright on exam weeks, moved by your result), the artist is
@@ -67,6 +66,33 @@ function cast() { return [...characters].sort((a, b) => a.seat - b.seat); }
 // cast() is what still walks all six - the endings count the whole class.
 function charMet() { return cast().slice(0, gameWeek + 3); }
 
+// Who you run into, at a club or on a day out (GDD 7, 10). Somebody always
+// is: a draw over everyone you have met, weighted by `likes` - how much this
+// one cares for the thing in hand, one ticket a point, and everybody in the
+// hat evenly once nobody cares. Whoever loves it turns up oftener than
+// whoever does not, and nobody is ever the fixture: the same club two weeks
+// running is not the same face twice, which is the whole of why it is a draw
+// and not a lookup. Seeded, so revisiting a picker cannot reroll it.
+//
+// It opened on a coin flip until 2026-09-08 - half the afternoons had nobody
+// on them. The variety was never the flip's doing, it was the draw's, and
+// the flip was deleting half of the one contact in the week that costs no
+// text: the good ending ran 12 of 60 with it and 42 without (GDD 15). It
+// also threw away the half of the game where knowing somebody's taste buys
+// you the meeting - what you learn is how you aim this.
+//
+// The two callers differ only in what `likes` means - taste for an emoji at
+// school, the strongest opinion on a place's own words on a trip - so the
+// draw itself lives here once rather than twice.
+function charEncounter(likes)
+{
+    const met = charMet(), liked = [];
+    for (const c of met)
+        for (let i = 0; i < max(0, likes(c)); ++i)
+            liked.push(c);
+    return netPick(liked.length ? liked : met);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 // one classmate: an archetype, and the opinions the player has to deduce
@@ -83,8 +109,11 @@ class Character
         this.word = word;   // the like the role guarantees, so ❓ never sells it (GDD 5)
 
         // A role's word is a like, not a club - but five of the six are club
-        // words, and that is where you run into them at school. The night
-        // owl's is night; she haunts none.
+        // words, and the club of that name is the one place their taste is
+        // public before you have deduced a thing. It no longer says where
+        // they are: school hands you a draw over everyone you know (GDD 7),
+        // so nobody haunts anywhere, and the night owl's word is not a club
+        // at all.
         this.club = netClubs.includes(word) ? word : '';
 
         // how they feel, what they have heard lately, and this week's mood

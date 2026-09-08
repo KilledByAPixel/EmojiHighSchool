@@ -55,7 +55,7 @@ function calExamPrompts(q) { return min(3, q + 1); }
 const calEvents =
 [
     [0,  '🌸', 'new school year'],
-    [11, '📝', 'exams', 1, 'smart'],  // the bookworm lives for grades
+    [11, '📝', 'exams', 1, 'science'],  // the bookworm lives for grades
     [12, '🦄', 'Unicorn Week'],       // js13k's own number: the mascot's week, its own
     [16, '🎆', 'summer festival'],
     [20, '🏃', 'sports day', 0, 'sports'],      // the jock's day
@@ -64,7 +64,7 @@ const calEvents =
     [30, '🎄', 'winter party', -1, 'cold'],     // everyone's
     [33, '⛩️', 'New Year'],
     [35, '🍫', "Valentine's"],        // runs the other way - crushes give to you
-    [36, '📝', 'exams', 1, 'smart'],
+    [36, '📝', 'exams', 1, 'science'],
     [38, '🤍', 'White Day'],          // the player's turn, three weeks on
     [39, '🌳', 'graduation'],         // the confession
 ];
@@ -73,6 +73,7 @@ let gameWeek = 0;
 // This week's cards, both of them [who, ...] with who an index into the cast,
 // because both go into the save and a character object does not.
 let calGifts = [];  // [who, emoji] - what people gave you, on the weeks they do
+let calLearned = []; // [who, emoji] - what a classmate taught you this week
 let calNews = [];   // [who, title, line] - what happened while you were out
 let calNewsNext = [];   // the same, for the Monday after this week end: what the
                         // weekend already knows before calEndWeek resets calNews
@@ -138,24 +139,18 @@ function calPhoneAvailable() { return weekPhoneUsed < 1; }
 function calExamWords(emoji)
 {
     const rec = netByEmoji[emoji];
-    return [rec.club, rec.colour, rec.size, ...rec.tags];
+    return [rec.club, rec.colour, ...rec.tags];
 }
 
 // Every word all these prompts share - that shared word is what makes the
 // question answerable, and the exam is the one place it gets named out loud.
 //
-// Never 'medium'. It is the size an emoji has when its size is not worth
-// remarking on, which is why no classmate is ever rolled an opinion about it
-// (score.js, scoreRollOpinions) and no place favours it - so a question whose
-// answer is "they share: medium" is a question about nothing. 55 of the 152
-// are medium and 17% of the two-prompt draws that share anything share only
-// that, so this was about one question in six. Dropping the word here is the
-// whole fix: calExamDraw redraws while nothing is shared.
+// Every shared word is meaningful now: tiny and huge are ordinary tags, not a
+// size axis with a neutral middle value.
 function calExamShared(prompts)
 {
     const [first, ...rest] = prompts.map(calExamWords);
-    return first.filter(word => word != 'medium' &&
-        rest.every(words => words.includes(word)));
+    return first.filter(word => rest.every(words => words.includes(word)));
 }
 
 // this answer's score against every prompt, summed (GDD 8)
@@ -320,6 +315,7 @@ function calEndWeek()
     activityMet = 0;
     examResult = '';
     calGifts = [];
+    calLearned = [];
 
     // the week each of them is about to have (GDD 3) - rolled first, so
     // everything the rest of this week end does to a mood sticks
@@ -581,10 +577,12 @@ function calendarHTML()
         {
             const week = first + w;
             const on = calEvent(week);
+            const bday = charMet().find(c => calBirthday(c) == week);
             const day = calIsExam(week) ? 2 : 5;   // exams midweek, the rest on the weekend
             return [...Array(7)].map((u, d) =>
                 `<div class="dy ${week == gameWeek ? 'now' : week < gameWeek ? 'past' : ''}">` +
-                (on && d == day ? `<span>${domSafe(on)}</span>` : w*7 + d + 1) +
+                (bday && d == 3 ? `<span>${bday.avatar(16)}🎂</span>` :
+                on && d == day ? `<span>${domSafe(on)}</span>` : w*7 + d + 1) +
                 `</div>`).join('');
         }).join('') + `</div>` +
 
@@ -611,7 +609,7 @@ function calEventCard()
 {
     const event = calEvent(), whose = calWhose();
     return card(glyph(event || '🎒', 38),
-        event ? calEventName(event) : 'a normal school week',
+        event ? calEventName(event) : 'normal school week',
         calIsExam() ? `pass ${CAL_EXAM_PASS} of ${CAL_EXAM_QUESTIONS} questions - ` +
             `what do a few of these have in common?` :
         event == '🍫' ? 'everyone who likes you back gives you something' :
@@ -634,15 +632,20 @@ function calDayCards()
         calGifts.map(([who, gift]) =>
             card(characters[who].avatar(38),
                 `${characters[who].name} gave you ${gift}`,
+                'it is on your keyboard now')).join('') +
+        calLearned.map(([who, emoji]) =>
+            card(characters[who].avatar(38),
+                `${characters[who].name} taught you ${emoji}`,
                 'it is on your keyboard now')).join('');
 }
 
 function calRemindersHTML()
 {
     // every piece of news is about somebody, and wears their face
-    return (calEvent() ? calEventCard() : '') + calDayCards() +
+    return (calEvent() ? calEventCard() : '') +
         calNews.map(([who, title, line]) =>
-            card(characters[who].avatar(38), title, line)).join('');
+            card(characters[who].avatar(38), title, line)).join('') +
+        calDayCards();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -676,8 +679,6 @@ function activityChoices(club)
 // emoji said out loud. Returns the face it landed on, for the card that says.
 function calRunIn(c, emoji)
 {
-    c.prompt = scorePrompt(c.opinions);
-    c.thread.push({them: 1, text: c.prompt});
     const result = chatScoreSend(c, [emoji], '');
     c.affection += result.total;
     chatLand(c, result.total);
@@ -687,6 +688,14 @@ function calRunIn(c, emoji)
     return scoreFace(result.total);
 }
 
+// Who was at school this week (GDD 7): the draw, weighted by what each of
+// them would make of the emoji you just learned. A club is a place, not a
+// person - nobody lives in one, and anybody you know can turn up in any.
+function calActivityWho(emoji)
+{
+    return charEncounter(c => scoreTaste(emoji, c.opinions));
+}
+
 // spend the week on this choice
 function activityPick(emoji)
 {
@@ -694,18 +703,14 @@ function activityPick(emoji)
     calForcedClub = '';   // a forced pick only ever costs the one week (GDD 8)
     playerUnlock(emoji);
 
-    // the classmate who haunts this club is there: school is where you
-    // actually run into people (GDD 7) - the ones you have met, that is, so
-    // the home screen never names a stranger. It was a coin flip, and the
-    // sim said the flip was what kept the best ending out of reach: the
-    // run-in is the one contact that costs no text, and half of it was being
-    // thrown away (GDD 15)
+    // School is where you run into a met classmate, weighted toward someone
+    // who likes the emoji you just learned. It is seeded, not a free reroll.
     // the home screen reads how it landed straight off this, so the
     // encounter says what it earned where the player is standing rather
     // than only inside a thread they have to go and open (GDD 12)
-    const resident = charMet().find(c => c.club == netByEmoji[emoji].club);
-    if (resident)
-        activityMet = [resident, emoji, calRunIn(resident, emoji)];
+    const who = calActivityWho(emoji);
+    if (who)
+        activityMet = [who, emoji, calRunIn(who, emoji)];
 
     weekActivityUsed = 1;
     activityLearned = emoji;
@@ -731,19 +736,12 @@ function activityHTML()
     const done = activityLearned;
     const club = done ? netByEmoji[done].club : activityClub || forced;
     const learned = c => `${calOwnedIn(c)} of ${netClub(c).length} learned`;
-
-    // each club names the classmate who haunts it, once met (GDD 7): the
-    // run-in is certain, so a club is also somebody to go and see, and that
-    // is a thing you would know. The club first, then their face and name at
-    // text size on the same line, so every row is one line high whether or
-    // not anybody haunts it.
-    const who = c => charMet().find(o => o.club == c);
+    // The club list is deliberately about the school choice, not about who
+    // happens to be there. The encounter is revealed after the emoji is kept.
     if (!club)
         return `<h1>School</h1>` + hint('pick a club to learn from this week') +
-            netClubs.filter(c => activityChoices(c).length).map(c =>
-                tap('club', c, 'row', rowBody('', `<b>${c}</b>` +
-                    (who(c) ? `<span>${who(c).avatar(20)} ${who(c).name}</span>` : ''),
-                    learned(c)))).join('');
+            netClubs.map((c, i) => activityChoices(c).length ?
+                tap('club', c, 'row', rowBody(['⚽','🍔','🌿','🐶','🎨','🔬','🎮','💄'][i], `<b>${c}</b>`, learned(c))) : '').join('');
 
     return `<h1>${club} club</h1>` +
         hint(forced && !activityClub && !done ?

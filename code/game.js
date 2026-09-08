@@ -54,7 +54,11 @@ function gameInit()
             gameSave();
         }
         titleFresh = 0;
-        gameScreen = screenHome;
+        // a year that reached its last day comes back to it, never to another
+        // go at it: the tree if the letter is still to write, the ending it
+        // landed on if it is not (GDD 11, 13)
+        gameScreen = endDone ?
+            endDone.length ? screenEnding : gameEndWeek() : screenHome;
         playSound(soundTap);
         gameRender();
     };
@@ -79,7 +83,7 @@ function gameStart(seed)
     gameWeek = weekActivityUsed = weekPhoneUsed = 0;
     gameStats = [0, 0, 0, 0, 0];
     examResult = '';
-    endWith = endCandidate = dateContact = gameContinued = 0;
+    endWith = endCandidate = endDone = dateContact = gameContinued = 0;
     activityMet = 0;
     activityClub = activityLearned = tripPlace = '';   // the last week never ends,
                                        // so never clears its own picks (GDD 7, 10)
@@ -88,6 +92,7 @@ function gameStart(seed)
     calExamAt = calExamPassed = 0;
     calExamResults = [];
     calGifts = [];
+    calLearned = [];
     calNews = calNewsNext = [];
     gameScreen = screenHome;
 }
@@ -103,7 +108,7 @@ let gameContinued = 0;   // this run was picked up rather than started
 // The key carries a number: bump it whenever the shape of the save changes,
 // and a save from before is simply not found, rather than half loaded with
 // fields that no longer mean what they did.
-const gameSaveKey = 'emojiHigh7';
+const gameSaveKey = 'emojiHigh10';
 
 // The three little switches - sound, music, and the emoji font (dom.js) -
 // live on their own tiny keys, read once at boot and written once per tap,
@@ -152,9 +157,19 @@ function gameSave()
     {
         localStorage[gameSaveKey] = JSON.stringify([gameSeed, gameWeek,
             playerKeyboard, playerSent, playerGiven,
-            calExamResults, calForcedClub, calNews, calGifts, gameStats,
+            calExamResults, calForcedClub, calNews, calGifts, calLearned, gameStats, endDone,
             characters.map(c => [c.affection, c.quiet, c.strikes, c.told,
-                c.incoming, c.lastDate, c.prompt, c.reactions, c.fav, c.mood])]);
+                c.incoming, c.lastDate, c.prompt, c.reactions, c.fav, c.mood,
+                // The thread, positionally like every other column (GDD 13):
+                // a bubble of theirs is its string, one of yours is its emoji
+                // and the raw taste each of them earned. Never the message
+                // objects themselves - Closure renames `mine`, `emojis` and
+                // `parts`, so a save holding those keys would quietly stop
+                // meaning anything the next time the game was built, and
+                // would come back as garbage rather than fail. The total is
+                // not kept because nothing ever reads it back.
+                c.thread.map(m => m.mine ?
+                    [m.emojis, m.parts.map(p => p.taste)] : m.text)])]);
     }
     catch (e) {} // a phone with no room, or a browser with no storage
 }
@@ -168,7 +183,7 @@ function gameLoad()
 
         let people;
         [, gameWeek, playerKeyboard, playerSent, playerGiven,
-            calExamResults, calForcedClub, calNews, calGifts, gameStats,
+            calExamResults, calForcedClub, calNews, calGifts, calLearned, gameStats, endDone,
             people] = save;
 
         // everything else - opinions, the library - is already right:
@@ -176,20 +191,31 @@ function gameLoad()
         people.forEach((data, i) =>
         {
             const character = characters[i];
+            let thread;
             [character.affection, character.quiet, character.strikes,
                 character.told, character.incoming, character.lastDate,
                 character.prompt, character.reactions, character.fav,
-                character.mood] = data;
+                character.mood, thread] = data;
 
-            // Threads are flavour and are not saved (GDD 13) - what an emoji
-            // earned lives in reactions, which is what the notebook and Notes
-            // both read. The one bubble that is not flavour is an unanswered
-            // incoming: the text still waiting on the player's own (GDD 9), so it
-            // is rebuilt from their saved prompt and mood, cold if that is
-            // what it was - the same one bubble chatIncoming writes.
-            character.thread = character.incoming ?
-                [{them: 1, text: chatOpener(character) + character.prompt}] : [];
+            // The conversation comes back whole (GDD 13). It used to be
+            // thrown away as flavour, with the one unanswered text rebuilt
+            // from the saved prompt - so closing the tab lost the record of
+            // the year the player had actually played: what they had tried on
+            // somebody, and what every bit of it earned. That record is half
+            // of what a thread is for (GDD 6).
+            character.thread = thread.map(m => typeof m == 'string' ?
+                {them: 1, text: m} :
+                {mine: 1, emojis: m[0],
+                    parts: m[1].map((taste, j) => ({e: m[0][j], taste}))});
         });
+
+        // and who the letter went to, if it has been written (GDD 11) - after
+        // the loop, because it points into the cast the loop just filled in.
+        // characters[] of a missing index is already undefined, so an absent
+        // one and the -1 that means going home alone need no test of their own
+        if (endDone)
+            endCandidate = characters[endDone[0]] || 0,
+                endWith = endDone[1] ? endCandidate : 0;
         return gameContinued = 1;
     }
     catch (e) {} // nothing saved, or a save from a version that no longer fits
@@ -313,11 +339,18 @@ function gameAction(action, arg)
     // the last day: the letter under the tree (GDD 11)
     else if (action == 'confess')
         endCandidate = characters[arg];
+    // Handing the letter over is final, and is saved on the spot: it is the
+    // one guess in the game with no second go at it, and a reload used to be
+    // exactly that (GDD 11, 13). endWith is either endCandidate or 0, so && is
+    // enough to write down whether it landed; going home alone needs only the
+    // first half of the pair.
     else if (action == 'letter')
-        endWith = endLetter(arg), gameScreen = screenEnding,
+        endWith = endLetter(arg), endDone = [endCandidate.idx, endWith && 1],
+            gameScreen = screenEnding, gameSave(),
             playSound(endWith ? soundGood : soundSad);
     else if (action == 'solo')
-        endWith = endCandidate = 0, gameScreen = screenEnding, playSound(soundSad);
+        endWith = endCandidate = 0, endDone = [-1],
+            gameScreen = screenEnding, gameSave(), playSound(soundSad);
     else if (action == 'again')
         gameStart(randInt(1e6)), gameSave();
 
@@ -339,8 +372,12 @@ function gameAction(action, arg)
 // earned, in which case the tree is never offered at all (GDD 11)
 function gameEndWeek()
 {
+    // The last day is one way. Marked and saved the moment it begins, so a
+    // reload comes back to the tree rather than to another week forty to
+    // spend on the very rungs the tree is about to read (GDD 13).
     if (gameWeek >= calWeeks - 1)
-        return gameScreen = endGood() ? screenEnd : screenEnding;
+        return endDone = [], gameSave(),
+            gameScreen = endGood() ? screenEnd : screenEnding;
 
     // a date is what the weekend is spent on, when one is booked - and a
     // trip otherwise, always: skipping ahead with a slot unspent costs the
@@ -398,10 +435,10 @@ function titleHTML()
         <p style="font-size:52px">🌈🦄</p>
         <div class=cast>${cast().map(c => c.avatar(46)).join('')}</div>
         ${hint('Text them, read their reactions, find out what they love.')}
-        <p class="h blink" style="font-size:22px;margin-top:20px">${gameContinued ?
+        <p class="h blink" style="font-size:30px;margin-top:20px">${gameContinued ?
             `tap to carry on - ${deviceDate()}` : 'tap to start'}</p>
-        ${gameContinued ? `<p class="h fresh">${titleFresh ?
-            'the old year will be gone forever - tap here again' :
+        ${gameContinued ? `<p class="h fresh" style="font-size:24px;margin-top:20px">${titleFresh ?
+            'the old year will be gone! tap again to confirm' :
             'or start a fresh year'}</p>` : ''}`;
 }
 

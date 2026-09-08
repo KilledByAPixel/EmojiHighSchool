@@ -75,6 +75,10 @@ let musicEnabled = 1;
 // announce itself to somebody with the phone in a bag.
 function musicTick()
 {
+    // pause music if focus lost
+    if (!document.hasFocus())
+        return;
+
     const [, roots, hat] = musicContexts[musicContext];
 
     // a new chord every four bars, walking a step either way, home every 256

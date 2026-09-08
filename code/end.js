@@ -30,6 +30,18 @@ const endSolo = ['🍜🌇📱', 'Ramen alone, and a phone full of memories.'];
 let endWith;        // who won the letter, 0 for the solo ending
 let endCandidate;   // who the tree is confessing to right now, 0 on the list
 
+// The last day, once it has begun (GDD 11, 13), and the one thing in this game
+// that cannot be taken back. 0 while the year is still being played; `[]` once
+// the tree is up - or once the ending that stands in for it is, when the good
+// ending was never earned; and `[who, landed]` once the letter is handed: the
+// roster index of whoever it was written to, -1 for going home alone, and
+// whether it found their favourite.
+//
+// It is saved, because without it a reload handed back the whole of week forty:
+// another week of actions to lift somebody over a rung with, and another letter
+// to whoever the first one had missed.
+let endDone = 0;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 // what still blocks the good ending: a stranger (GDD 3, 11)

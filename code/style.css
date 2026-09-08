@@ -2,9 +2,10 @@
 
 body {
     margin: 0;
-    background: #0a0a10;
+    background: #001;
     color: #fff;
-    font: 20px emoji, system-ui, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    font: 20px emoji, system-ui, sans-serif;
+    text-shadow: 2px 2px 5px #000;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
@@ -27,7 +28,7 @@ body {
     top: 50%;
     width: 540px;
     height: 960px;
-    background: #17161f;
+    background: #112;
     border-radius: 34px;
     overflow: hidden;
     display: flex;
@@ -36,7 +37,7 @@ body {
 
 /* status bar and home bar */
 #bar, #hb {
-    background: #24222e;
+    background: #223;
     display: flex;
     align-items: center;
     padding: 0 16px;
@@ -68,19 +69,19 @@ p  { margin: 0; }
 b { font-weight: normal; }
 i { font-style: normal; }
 u, s { text-decoration: none; }
-.h { color: #9d99ad; font-size: 16px; text-align: center; }
+.h { color: #9aa; font-size: 16px; text-align: center; }
 .h.l { text-align: left; }
 
 .btn {
-    background: #2f2c3d;
+    background: #334;
     border-radius: 12px;
     padding: 12px 18px;
     text-align: center;
     cursor: pointer;
 }
-.btn:active { background: #3d3950; }
-.btn.go { background: #2f4a7a; }
-.btn.off { background: #1f1d29; color: #6e6a7d; }
+.btn:active { background: #445; }
+.btn.go { background: #247; }
+.btn.off { background: #223; color: #889 }
 
 /* The home screen: six tiles, three across and two down, filling the phone -
    the week is spent from here, so this is the biggest thing on the screen. */
@@ -89,32 +90,32 @@ u, s { text-decoration: none; }
 .app b {
     display: block;
     position: relative;
-    background: #2f2c3d;
+    background: #334;
     border-radius: 30px;
     font-size: 68px;
     padding: 22px 0 24px;
 }
 .app i { display: block; font-size: 18px; margin-top: 6px; }
-.app.off { color: #6e6a7d; }
-.app.off b { background: #1f1d29; }
+.app.off { color: #889; }
+.app.off b { background: #223; }
 /* The corner mark: the ★ on a slot still to spend, or the dot on a message
    waiting to be read. The colour only reaches the star - 🔴 is a colour glyph
    out of the emoji font and paints itself. ★ is U+2605, which Twemoji does
    not carry and never will: it is a text symbol, not an emoji, so it falls
    through to the platform's own monochrome one and takes this gold. That is
    the whole trick, and npm run font:sweep reports it every time. */
-.app b s { position: absolute; top: 4px; right: 10px; font-size: 26px; color: #ffce4a; }
+.app b s { position: absolute; top: 4px; right: 10px; font-size: 26px; color: #fc4; }
 /* the same gold, reused for the ★ favourite mark in a thread header and Notes
    (chat.js, chatFavHTML) - not positioned like the tile corner above, just
    sitting inline in a line of words */
-.fav { color: #ffce4a; }
+.fav { color: #fc4; }
 
 /* everything tappable answers the finger, which is most of the feel of a phone */
 .app:active, .row:active, .pick:active, .key:active, .slot:active { transform: scale(.96); }
-.row:active, .pick:active { background: #34313f; }
+.row:active, .pick:active { background: #445; }
 /* somebody whose text is waiting for yours: the row is lit, so the one thing
    on the list that wants an answer is the one thing you cannot miss */
-.row.hot { background: #2f4a7a; }
+.row.hot { background: #247; }
 
 /* An avatar is a colorized face glyph in a fixed box, so one recipe sits the
    same at every size the phone draws it. The box is 1.4em wide because that is
@@ -127,7 +128,7 @@ u, s { text-decoration: none; }
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #26242f;
+    background: #334;
     border-radius: 14px;
     padding: 10px 14px;
     cursor: pointer;
@@ -139,11 +140,11 @@ u, s { text-decoration: none; }
 .row.ro { pointer-events: none; }
 .row .t { flex: 1; min-width: 0; }
 .row .t b { font-size: 21px; font-weight: bold; }
-.row .t > span { color: #9d99ad; font-size: 17px; margin-left: 6px; }
+.row .t > span { color: #9aa; font-size: 17px; margin-left: 6px; }
 /* the mood line: a row is two lines now, so the second is drawn at a size
    the faces can actually be read at (chat.js, chatMoodLine) */
 .mood { font-size: 26px; margin-top: 2px; }
-.row .f { text-align: center; font-size: 15px; color: #9d99ad; }
+.row .f { text-align: center; font-size: 15px; color: #9aa; }
 /* the four hearts (chat.js, chatHearts), small enough to sit in one line */
 .row .f b { display: block; font-size: 17px; letter-spacing: 1px; }
 
@@ -151,9 +152,9 @@ u, s { text-decoration: none; }
    messages spill up out of the box and over the header instead of scrolling.
    The auto margin on the first one keeps a short conversation pinned to the
    bottom, which justify-content cannot do without breaking the scroll. */
-.thread { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 200px; overflow-y: auto; }
+.thread, .list { flex: 1; min-height: 200px; overflow-y: auto; }
+.thread { display: flex; flex-direction: column; gap: 8px; }
 .thread > :first-child { margin-top: auto; }
-.list { flex: 1; min-height: 200px; overflow-y: auto; }
 .bub {
     max-width: 62%;
     padding: 8px 14px;
@@ -164,16 +165,16 @@ u, s { text-decoration: none; }
     gap: 6px;
     align-items: flex-end;
 }
-.bub.me { align-self: flex-end; background: #2f4a7a; }
-.bub.them { align-self: flex-start; background: #33303f; }
+.bub.me { align-self: flex-end; background: #247; }
+.bub.them { align-self: flex-start; background: #334; }
 /* the newest message lands, which is the only motion in a conversation */
 .thread > .bub:last-child { animation: pop .2s ease-out; }
 @keyframes pop { from { transform: scale(.7); opacity: 0; } }
 .bub u { position: relative; }
 .bub u s { position: absolute; right: -10px; bottom: -12px; font-size: 17px; }
 
-.compose { display: flex; align-items: center; gap: 10px; background: #24222e; border-radius: 14px; padding: 8px 12px; }
-.slot { width: 46px; height: 46px; border-radius: 10px; background: #1b1a24; font-size: 32px; text-align: center; line-height: 46px; cursor: pointer; }
+.compose { display: flex; align-items: center; gap: 10px; background: #334; border-radius: 14px; padding: 8px 12px; }
+.slot { width: 46px; height: 46px; border-radius: 10px; background: #112; font-size: 32px; text-align: center; line-height: 46px; cursor: pointer; }
 
 /* the keyboard: what you own, a row per club. A full club runs to 24 keys,
    wider than the 540px phone, so a row wraps rather than overflow -
@@ -187,14 +188,14 @@ u, s { text-decoration: none; }
    apart from the next, so a tapback and the emoji that earned it read as one
    line - the same strip on the card in Notes and in a thread's journal. The
    tapback at full size, no keyboard-label gap. */
-.rr { background: #2f2c3d; border-radius: 8px; padding: 3px 8px; margin-top: 4px; }
+.rr { background: #334; border-radius: 8px; padding: 3px 8px; margin-top: 4px; }
 .rr > span { width: 30px; font-size: 22px; }
 /* Stats is a short list read at arm's length: bigger, centred */
 .stats .h.l { text-align: center; font-size: 25px; margin: 10px 0; }
 /* the collection wall, the one wrapped row with no label in front of it:
    the emoji are the whole picture, so they sit centred under the counters */
 .stats + .wrap { justify-content: center; }
-.kbrow > span { width: 52px; font-size: 12px; color: #827f90; flex: none; }
+.kbrow > span { width: 52px; font-size: 12px; color: #889; flex: none; }
 .key {
     width: 36px;
     height: 30px;
@@ -204,20 +205,20 @@ u, s { text-decoration: none; }
     cursor: pointer;
     border-radius: 6px;
 }
-.key.off { color: #0000; background: radial-gradient(#26242f 34%, #0000 36%); cursor: default; }
+.key.off { color: #0000; background: radial-gradient(#223 34%, #0000 36%); cursor: default; text-shadow: none; }
 
 /* the month: a row per week, seven days across */
 .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.cal b { text-align: center; font-size: 13px; color: #827f90; }
-.dy { background: #26242f; border-radius: 7px; height: 44px; display: grid; place-items: center; font-size: 17px; color: #8d8a9b; }
+.cal b { text-align: center; font-size: 13px; color: #889; }
+.dy { background: #334; border-radius: 7px; height: 44px; display: grid; place-items: center; font-size: 17px; color: #889; }
 /* the event glyph in a day cell - a bare span, because the class=e that used
    to mark every emoji in the game styled nothing anywhere else and went in the
    size pass: the font reaches them through the page, not through a class */
 .dy span { font-size: 24px; }
-.dy.now { background: #2f4a7a; color: #fff; }
-.dy.past { background: #1f1d29; color: #56536a; }
+.dy.now { background: #247; color: #fff; }
+.dy.past { background: #112; color: #556; }
 
-.card { background: #26242f; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
+.card { background: #334; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
 .card .t { flex: 1; }
 
 /* three offers as tiles - a club's at School and a place's on a trip - and
@@ -225,9 +226,9 @@ u, s { text-decoration: none; }
    dateTripHTML). A tile that was not taken this week is greyed, and after
    .pick:active so a finger does nothing to it. */
 .picks { display: flex; gap: 14px; justify-content: center; margin-top: 6px; }
-.pick { background: #26242f; border-radius: 14px; padding: 14px 8px 10px; width: 118px; text-align: center; cursor: pointer; }
+.pick { background: #334; border-radius: 14px; padding: 14px 8px 10px; width: 118px; text-align: center; cursor: pointer; }
 .pick b { display: block; font-size: 48px; }
-.pick.off { opacity: .35; cursor: default; transform: none; background: #26242f; }
+.pick.off { cursor: default; transform: none; background: #223; color: #889; }
 
 /* the endgame tableau */
 .tab { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 52px; }
@@ -236,14 +237,14 @@ u, s { text-decoration: none; }
 #m {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,.7);
+    background: #000b;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-#m > div { background: #2b2937; border-radius: 20px; padding: 26px 24px; width: 420px; text-align: center; }
-#m .btns { display: flex; gap: 14px; margin-top: 20px; }
-#m .btns .btn { flex: 1; }
+#m > div { background: #334; border-radius: 20px; padding: 26px 24px; width: 420px; text-align: center; }
+#m .btns { display: flex; gap:14px; margin-top:20px }
+#m .btns .btn{flex:1}
 /* !important because the only two things that hide are #m and #t, and an id
    rule beats a class one: without it the title screen never goes away */
 .hide { display: none !important; }
@@ -251,9 +252,9 @@ u, s { text-decoration: none; }
 .ghost { visibility: hidden; }
 
 /* the title screen fills the phone */
-#t { position: absolute; inset: 0; background: #17161f; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+#t { position: absolute; inset: 0; background: #112; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
 #t .big { font-size: 150px; }
 #t h1 { font-size: 40px; letter-spacing: 1px; }
-#t .cast { display: flex; gap: 6px; margin: 14px 0; }
-.blink { animation: blink 1.2s steps(2) infinite; }
-@keyframes blink { 50% { opacity: .25; } }
+#t .cast { display: flex; gap: 6px; margin: 14px 0 }
+.blink { animation: blink 1.2s steps(2) infinite }
+@keyframes blink { 50% { opacity: .25 } }
