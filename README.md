@@ -6,6 +6,8 @@ Everyone is hiding what they love. Every emoji has a club, a colour and tags —
 
 Nobody's taste is written down. It's rolled from a seed, so no guide can spoil it. You have forty weeks, and on the final day you can hand one of them the emoji they love most in the world and win their heart.
 
+![Emoji High School](cover.png)
+
 ## 🕹️ Controls
 
 Mouse or touch; the game is one phone. - ⭐ = a slot you haven't spent, 🔋 = the week has something left, 🔊🎵 = sound and music.
