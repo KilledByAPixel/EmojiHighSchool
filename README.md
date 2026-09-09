@@ -1,5 +1,9 @@
 # 🏫 Emoji High School
 
+# [PLAY ENHANCED VERSION](https://killedbyapixel.github.io/EmojiHighSchool/)
+
+# [OFFICIAL JS13K PAGE](https://js13kgames.com/2026/games/emoji-high-school)
+
 **One school year. Six classmates. The only language you speak is emoji.**
 
 Everyone is hiding what they love. Every emoji has a club, a colour and tags — none of it hidden. Send someone a picture and read the face that comes back: 🍓 landing well could mean *red*, *food* or *tiny*. Send another to find out which.
