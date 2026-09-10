@@ -136,8 +136,12 @@ function dateAsk()
 // emoji (dateSceneHTML), so there is no face to guard against.
 function dateReply(emoji)
 {
+    // a legal beat is owned, and never the thing they just showed you (GDD
+    // 4) - this beat's own prompt and only that: on the place beat it is the
+    // place, which is not on the keyboard anyway, so beat two's emoji is not
+    // held back for nothing. The keyboard (dateSceneHTML) shows the same rule.
     const last = dateThread[dateThread.length - 1];
-    if (!last || !last.them || !playerOwns(emoji))
+    if (!last || !last.them || !playerOwns(emoji) || emoji == last.emoji)
         return;
 
     const bonus = datePlaceBonus(emoji, dateLocation);
@@ -273,7 +277,7 @@ function dateSceneHTML()
             // the exam's rule, not compose's: a date is answered with one
             // plain emoji, and ❓ has nothing to ask here - offering it would
             // spend a beat of three on nothing at all (GDD 10)
-            chatKeyboardHTML(calExamKeyLive));
+            chatKeyboardHTML(e => calExamKeyLive(e) && e != last.emoji));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

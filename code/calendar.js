@@ -27,16 +27,18 @@ const CAL_INCOMING_GAP = 2;   // 📏 weeks between an unprompted incoming
 // A short month still draws four rows - its last one is a week off.
 const calMonthWeeks = [4,3,3,4,3,3,4,3,3,4,3,3];
 
-// Exams (GDD 8): five questions, pass on three, graded within a margin of
-// what your own keyboard could best have answered. A player who answers the
-// legible way - the one of mine that carries the most of what these share -
-// lands within 2 on 76% of questions and within 3 on 89%. At a margin of 2
-// a worked-out player passes 114 sittings of 120 and both exams in 54 years
-// of 60, so the exam decides the good ending about one year in ten; a looser
-// margin decided nothing at all. The tuning table is GDD 15.
+// Exams (GDD 8): five questions, pass on three, graded against the best your
+// own keyboard could have answered - within one point a prompt. The margin
+// grows with the question because the best answer's score does: overlap is
+// summed over every prompt, so a three-prompt best is about 7 where a
+// one-prompt best is 3, and it collects incidental matches - this prompt's
+// colour, that one's tag - that the player is never told to look for. A
+// flat 2 passed the legible answer (the one of mine that carries the most
+// of what these share) on 100% of one-prompt questions and 60% of
+// three-prompt ones; one a prompt makes that 100 / 87 / 80, a ramp instead
+// of a cliff. The tuning table is GDD 15.
 const CAL_EXAM_QUESTIONS = 5;   // 🔸 five questions to a sitting
 const CAL_EXAM_PASS = 3;        // 🔸 pass on this many of the five
-const CAL_EXAM_MARGIN = 2;      // 📏 how far under your own best still counts
 
 // prompts per question, 0-based: one, two, three, in both exams - one more
 // thing that has to be in common narrows the search without changing the
@@ -224,8 +226,9 @@ function calExamStart()
     calExamPassed = 0;
 }
 
-// grade one question: score against every prompt, pass within the margin of
-// your own keyboard's best. That best is always >= 0 and so is any score, so
+// grade one question: score against every prompt, pass within one point a
+// prompt of your own keyboard's best (GDD 8). That best is always >= 0 and
+// so is any score, so
 // a keyboard with nothing to say passes by definition - the margin check
 // alone already covers it, no separate case needed.
 function calExamAnswer(emoji)
@@ -235,7 +238,7 @@ function calExamAnswer(emoji)
         return;
     q.answer = emoji;
     q.score = calExamScore(emoji, q.prompts);
-    q.pass = q.score >= q.best.score - CAL_EXAM_MARGIN;
+    q.pass = q.score >= q.best.score - q.prompts.length;
     q.graded = 1;
     if (q.pass)
         ++calExamPassed;

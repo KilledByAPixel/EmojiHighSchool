@@ -446,12 +446,19 @@ function chatGift()
 // live on the compose keyboard: the week's one text is still there (a reply
 // and a present both spend it, GDD 9 - with it gone the keyboard goes dead
 // rather than letting a message be typed and then refused), and the key is
-// owned, not already picked, and would still leave a legal message
-// (chatShapeOK) - or is ❓ typed first, on its own, waiting for the emoji
-// the question is about
+// owned, not already picked, not the thing they just showed you, and would
+// still leave a legal message (chatShapeOK) - or is ❓ typed first, on its
+// own, waiting for the emoji the question is about.
+//
+// Their prompt is dead while it is their prompt and back the moment it
+// re-rolls (GDD 4). Overlap credits every word an emoji carries and nothing
+// matches an emoji better than itself, and a prompt is always something they
+// like - so with the echo allowed it was the best reply in the whole library
+// in 16 seeds of 30, with nothing worked out at all.
 function chatKeyLive(emoji)
 {
     return calPhoneAvailable() && playerOwns(emoji) && !chatCompose.includes(emoji) &&
+        emoji != chatContact.prompt &&
         (chatShapeOK([...chatCompose, emoji]) || emoji == '❓' && !chatCompose.length);
 }
 
