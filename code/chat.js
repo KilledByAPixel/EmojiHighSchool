@@ -457,8 +457,8 @@ function chatGift()
 // in 16 seeds of 30, with nothing worked out at all.
 function chatKeyLive(emoji)
 {
-    return calPhoneAvailable() && playerOwns(emoji) && !chatCompose.includes(emoji) &&
-        emoji != chatContact.prompt &&
+    return calPhoneAvailable() && playerOwns(emoji) &&
+        ![...chatCompose, chatContact.prompt].includes(emoji) &&
         (chatShapeOK([...chatCompose, emoji]) || emoji == '❓' && !chatCompose.length);
 }
 
