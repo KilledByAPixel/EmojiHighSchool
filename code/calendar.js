@@ -624,8 +624,7 @@ function calEventCard()
     const event = calEvent(), whose = calWhose();
     return card(glyph(event || '🎒', 38),
         event ? calEventName(event) : 'normal school week',
-        calIsExam() ? `pass ${CAL_EXAM_PASS} of ${CAL_EXAM_QUESTIONS} questions - ` +
-            `what do a few of these have in common?` :
+        calIsExam() ? `pass ${CAL_EXAM_PASS} of ${CAL_EXAM_QUESTIONS} questions` :
         event == '🍫' ? 'everyone who likes you back gives you something' :
         event == '🤍' ? 'the whole school gives back - a present for anyone' :
         event == '🌳' ? `the last day - ${CAL_GOAL}` :
@@ -774,9 +773,9 @@ function calExamHTML()
 {
     if (!calExamQ.length)
         return `<h1>Exams</h1>` +
-            hint('five questions: pick one of yours that most matches the emoji shown') +
-            hint(`pass ${CAL_EXAM_PASS} of ${CAL_EXAM_QUESTIONS} - both exams count at ` +
-                `graduation, and a fail costs next week's pick`) +
+            // one line, and only what the week needs said: how the question is
+            // answered is on every question, and what a fail costs is felt
+            hint(`pass ${CAL_EXAM_PASS} of ${CAL_EXAM_QUESTIONS} - both exams count at graduation`) +
             button('exam', 0, '📝 sit the exam', 'go');
 
     if (calExamAt >= CAL_EXAM_QUESTIONS)
