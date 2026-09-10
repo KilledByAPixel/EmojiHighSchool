@@ -555,9 +555,13 @@ function calendarHTML()
     const first = calMonthWeeks.slice(0, month).reduce((a, b) => a + b, 0);
     const here = calMonth()[0];
 
-    // the arrow past either end of the year is a ghost: still there, so the
-    // month stays centred, but invisible, and the action clamps what it sends
-    return `<div class=row style="background:none;padding:0">` +
+    // The arrow past either end of the year is a ghost: still there, so the
+    // month stays centred, but invisible, and the action clamps what it sends.
+    // A plain flex box and never a .row: a row shrinks on :active, and that
+    // fires for a press anywhere inside it - on the month's name, and on the
+    // arrows themselves, which slid out from under the finger so a tap near
+    // an edge released on nothing. The arrows are .btn and press on their own.
+    return `<div style="display:flex;align-items:center">` +
         button('month', month - 1, '‹', month ? '' : 'ghost') +
         `<h1 style="flex:1">${deviceMonths[month]}</h1>` +
         button('month', month + 1, '›', month < calMonthWeeks.length - 1 ? '' : 'ghost') +
