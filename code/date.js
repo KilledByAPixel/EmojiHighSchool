@@ -119,7 +119,10 @@ function dateAsk()
     const beat = dateThread.filter(msg => msg.them).length;
     if (beat < dateBeats - 1)
     {
-        dateContact.prompt = scorePrompt(dateContact.opinions);
+        // never the thing they showed last time - a text's re-roll avoids
+        // its last prompt the same way, and without it the weighted draw
+        // could hand over the same emoji two beats running
+        dateContact.prompt = scorePrompt(dateContact.opinions, dateContact.prompt);
         dateThread.push({them: 1, emoji: dateContact.prompt});
     }
     else
@@ -252,8 +255,12 @@ function dateSceneHTML()
         // their raw taste, the place's own beat has none to read so it reads
         // its own score instead - the "no taste" rule is about scoring the
         // affection swing, not about muting the one piece of feedback (GDD 10)
-        `<div class=thread>` + dateThread.map(msg => msg.them ?
-            `<div class="bub them">${msg.emoji}</div>` :
+        // Their bubble opens with the face your last beat earned, the way a
+        // text's reply does (GDD 9, 10): the tapback on your own bubble is
+        // taste alone, so a perfect answer they happen to dislike wears a
+        // thumb down there, and this is where the answer itself is marked.
+        `<div class=thread>` + dateThread.map((msg, i) => msg.them ?
+            `<div class="bub them">${i ? scoreFace(dateThread[i - 1].score) + ' ' : ''}${msg.emoji}</div>` :
             `<div class="bub me"><u>${msg.emoji}` +
             `<s>${msg.place ? scoreFace(msg.score) : chatTapback(msg.taste)}</s></u></div>`)
             .join('') + `</div>` +

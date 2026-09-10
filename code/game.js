@@ -108,7 +108,7 @@ let gameContinued = 0;   // this run was picked up rather than started
 // The key carries a number: bump it whenever the shape of the save changes,
 // and a save from before is simply not found, rather than half loaded with
 // fields that no longer mean what they did.
-const gameSaveKey = 'emojiHigh10';
+const gameSaveKey = 'emojiHigh11';   // 11: five emoji left the library, and an old save could still own one
 
 // The three little switches - sound, music, and the emoji font (dom.js) -
 // live on their own tiny keys, read once at boot and written once per tap,
@@ -116,18 +116,21 @@ const gameSaveKey = 'emojiHigh10';
 // would put a gameSave() call on almost every screen, and only gameStart and
 // calEndWeek may write one (GDD 13): a mid-week mute and reload would refund
 // the week's spent actions and drop a booked date, repeatably, for free.
-// The two sound switches default ON and the font defaults OFF: an absent 'f'
-// is the js13k-legal state, and only a tap on the title screen ever writes it.
+// The two sound switches default ON and the font defaults OFF: an absent font
+// key is the js13k-legal state, and only a tap on the home screen ever writes it.
+// Every key wears the game's name, the save's included: js13kgames.com serves
+// every entry from one origin, so a bare 'm' would be shared with whichever
+// other game picked 'm' - and the shared prefix costs next to nothing zipped.
 // (A bitfield over one key was tried and measured at a single byte, which is
 // not worth resetting everybody's sound preference to collect.)
 // The keys are written in brackets, the same hazard netPlaces and the dataset keys
 // guard against: Closure ADVANCED renames a dotted property, so a dotted key
 // here would be a different, freshly renamed key on every build.
-function gameSwitchLoad() { try { audioEnabled = localStorage['m'] != 0;
-    musicEnabled = localStorage['u'] != 0;
-    domFontSet(localStorage['f'] > 0); } catch (e) {} }
-function gameSwitchSave() { try { localStorage['m'] = +audioEnabled;
-    localStorage['u'] = +musicEnabled; localStorage['f'] = +domFontOn; } catch (e) {} }
+function gameSwitchLoad() { try { audioEnabled = localStorage['emojiHighM'] != 0;
+    musicEnabled = localStorage['emojiHighU'] != 0;
+    domFontSet(localStorage['emojiHighF'] > 0); } catch (e) {} }
+function gameSwitchSave() { try { localStorage['emojiHighM'] = +audioEnabled;
+    localStorage['emojiHighU'] = +musicEnabled; localStorage['emojiHighF'] = +domFontOn; } catch (e) {} }
 
 // What v2 actually needs, and nothing it can regenerate (GDD 13). Dropped
 // against the fields the first pass was still carrying: weekActivityUsed and

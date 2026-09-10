@@ -32,7 +32,7 @@ Play it safe while guessing; say it like you mean it once you're sure. 📓 Note
 
 ## 🌈 Features
 
-- 145 emoji sharing 41 attributes, so what you learn about one tells you about others
+- 144 emoji sharing 41 attributes, so what you learn about one tells you about others
 - Forty weeks of clubs, exams, dates, trips, birthdays, presents and jealousy
 - Five moods, and classmates who give up on you if you go quiet
 - Unicorn Week 🦄, a free emoji that goes with everything
