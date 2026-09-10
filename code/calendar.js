@@ -183,11 +183,13 @@ function calExamDraw(n)
     // never be one of the prompts - so no rule has to say so, and no key on
     // the keyboard has to be greyed out and explained.
     //
-    // The pool cannot run dry, measured rather than guessed: a greedy
-    // collector - a School pick every week, a trip every weekend rather than
-    // a date, and every Valentine's present - owns about 80 of the library by
-    // the second exam on week 36, which leaves seventy-odd to draw three
-    // prompts from.
+    // The pool cannot run dry in play, measured rather than guessed: over 60
+    // years of every kind of player (test/sim.mjs) the most anybody owned by
+    // the END of the year was 100 of 144, the median 89, so at the second exam
+    // on week 36 forty-odd are always left to draw three prompts from. Only
+    // debugUnlockAll could empty it, and it leaves a club for this reason:
+    // empty, netPick hands back nothing; one or two short of n, the redraw
+    // below never ends.
     const pool = netLib.filter(rec => !playerOwns(rec.e));
     while (1)
     {
