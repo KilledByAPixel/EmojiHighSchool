@@ -217,6 +217,9 @@ u, s { text-decoration: none; }
 .dy span { font-size: 24px; }
 .dy.now { background: #247; color: #fff; }
 .dy.past { background: #112; color: #556; }
+/* the week off that fills out a short month (calendar.js): its own colour,
+   so it reads as a holiday rather than as a week spent or one still to come */
+.dy.off { background: #243; }
 
 .card { background: #334; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
 .card .t { flex: 1; }

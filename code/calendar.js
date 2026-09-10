@@ -23,7 +23,8 @@ const CAL_RIPPLE = 30;        // 📏 affection their friend circle loses too
 const CAL_INCOMING_GAP = 2;   // 📏 weeks between an unprompted incoming
 
 // The year as a real calendar: twelve months of three or four weeks, which is
-// what lets a week be a row of seven days instead of a numbered box (GDD 9)
+// what lets a week be a row of seven days instead of a numbered box (GDD 9).
+// A short month still draws four rows - its last one is a week off.
 const calMonthWeeks = [4,3,3,4,3,3,4,3,3,4,3,3];
 
 // Exams (GDD 8): five questions, pass on three, graded within a margin of
@@ -572,18 +573,25 @@ function calendarHTML()
             `${month < here ? 'behind you' : 'still to come'} - ` +
             `${deviceSeasons[calSeason(first)][1]}`) +
 
-        // The month, as a month: a row per week, seven days across, and the
-        // week you are living in highlighted the whole way along. A turn is a
-        // whole row, which is the thing a box per week never managed to say.
+        // The month, as a month: four rows of seven days, and the week you are
+        // living in highlighted the whole way along. A turn is a whole row,
+        // which is the thing a box per week never managed to say. The year is
+        // forty weeks and twelve does not divide it, so a short month draws its
+        // fourth row as a week off - numbered on, coloured its own way, and
+        // carrying no week of the year: never now, never past, nothing on it.
+        // Three rows read as a bug; four with one off reads as a holiday.
         `<div class=cal>` + [...'MTWTFSS'].map(d => `<b>${d}</b>`).join('') +
-        [...Array(calMonthWeeks[month])].map((v, w) =>
+        [...Array(4)].map((v, w) =>
         {
-            const week = first + w;
+            // a week off is no week of the year: it sits past the end of it, so
+            // nothing below finds an event, a birthday, this week or a past one
+            const off = w >= calMonthWeeks[month];
+            const week = off ? calWeeks : first + w;
             const on = calEvent(week);
             const bday = charMet().find(c => calBirthday(c) == week);
             const day = calIsExam(week) ? 2 : 5;   // exams midweek, the rest on the weekend
             return [...Array(7)].map((u, d) =>
-                `<div class="dy ${week == gameWeek ? 'now' : week < gameWeek ? 'past' : ''}">` +
+                `<div class="dy ${off ? 'off' : week == gameWeek ? 'now' : week < gameWeek ? 'past' : ''}">` +
                 (bday && d == 3 ? `<span>${bday.avatar(16)}🎂</span>` :
                 on && d == day ? `<span>${domSafe(on)}</span>` : w*7 + d + 1) +
                 `</div>`).join('');
