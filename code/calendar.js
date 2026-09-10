@@ -595,7 +595,9 @@ function calendarHTML()
             const day = calIsExam(week) ? 2 : 5;   // exams midweek, the rest on the weekend
             return [...Array(7)].map((u, d) =>
                 `<div class="dy ${off ? 'off' : week == gameWeek ? 'now' : week < gameWeek ? 'past' : ''}">` +
-                (bday && d == 3 ? `<span>${bday.avatar(16)}🎂</span>` :
+                // a birthday on the weekday of its row: six of them land on
+                // four different days, and never on the Saturday an event takes
+                (bday && d == w ? `<span>${bday.avatar(16)}🎂</span>` :
                 on && d == day ? `<span>${domSafe(on)}</span>` : w*7 + d + 1) +
                 `</div>`).join('');
         }).join('') + `</div>` +
