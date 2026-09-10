@@ -86,7 +86,7 @@ let calForcedClub = '';      // failing an exam takes next week's choice away (G
 let activityMet = 0;         // [who, emoji, face] when someone was at the club
 let calShowMonth = 0;        // the month the calendar app is turned to
 
-// This sitting's three questions and where you are in them - GDD 8's one
+// This sitting's five questions and where you are in them - GDD 8's one
 // place the game names its attributes out loud.
 let calExamQ = [];
 let calExamAt = 0;
@@ -131,7 +131,7 @@ function calIsExam(week = gameWeek) { return calEvent(week) == '📝'; }
 function calPhoneAvailable() { return weekPhoneUsed < 1; }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Exams (GDD 8): the same verb with nobody attached. Three questions, each
+// Exams (GDD 8): the same verb with nobody attached. Five questions, each
 // asking what a few library emoji have in common - answer with the one of
 // your own that shares the most, and this is graded against your own
 // keyboard's best, never the library's.
@@ -213,7 +213,7 @@ function calExamKeyLive(emoji)
     return playerOwns(emoji) && netByEmoji[emoji];
 }
 
-// begin a sitting: build the three questions and open the first one. The
+// begin a sitting: build the five questions and open the first one. The
 // week's activity slot is not spent until the sitting is actually finished,
 // so leaving mid-exam and coming back through School resumes it rather than
 // losing it.
@@ -679,16 +679,16 @@ function activityChoices(club)
         gameWeek*3 + netClubs.indexOf(club), activityLearned);
 }
 
-// Running into somebody (GDD 7, 10): at their club, or on a day out at a
-// place they love. They show you something of theirs first, so the thread
-// reads as running into them rather than as a text you never remember
-// sending - and their prompt goes up before the answer is scored, so the
-// overlap it pays is the one the thread actually shows (GDD 4). Scored as a
-// text with no face on it, through the one scorer every other exchange uses
-// (GDD 4): taste weighted in the total, raw taste in the tapback, the fact in
-// Notes the same way - and it counts as hearing from you (GDD 3). Scoring it
-// any other way makes a free encounter read colder than the same emoji said
-// out loud. Returns the face it landed on, for the card that says.
+// Running into somebody (GDD 7, 10): at a club, or on a day out at a place
+// they love. What you learned there is scored against them as a text with
+// no face on it, through the one scorer every other exchange uses (GDD 4):
+// taste weighted in the total, raw taste in the tapback, the fact in Notes
+// the same way, overlap against the prompt already on their row - and it
+// counts as hearing from you (GDD 3). Nothing of theirs is posted and their
+// prompt does not move: the thread shows your bubble and its tapback, the
+// home card the face, and a bubble of theirs here read as a text they had
+// sent for no reason. Scoring it any other way makes a free encounter read
+// colder than the same emoji said out loud. Returns the face it landed on.
 function calRunIn(c, emoji)
 {
     const result = chatScoreSend(c, [emoji], '');
