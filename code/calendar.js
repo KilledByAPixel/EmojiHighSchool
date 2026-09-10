@@ -166,7 +166,8 @@ function calExamScore(emoji, prompts)
 // the prompts themselves
 function calExamBest(prompts)
 {
-    const mine = Object.keys(playerKeyboard).filter(calExamKeyLive);
+    const mine = Object.keys(playerKeyboard).filter(e =>
+        calExamKeyLive(e) && !prompts.includes(e));
     return mine.reduce((best, e) =>
     {
         const score = calExamScore(e, prompts);
@@ -174,26 +175,20 @@ function calExamBest(prompts)
     }, {e: mine[0], score: -1});
 }
 
-// one question's prompts: real library emoji, never the keyboard, redrawn as
-// a set until they share at least one attribute word (GDD 8)
+// one question's prompts: real library emoji, owned or not, redrawn as a
+// set until they share at least one attribute word (GDD 8)
 function calExamDraw(n)
 {
-    // Only out of what you do NOT own. The exam is a test on the library, not
-    // on your own shelf - and drawing from the rest of it means an answer can
-    // never be one of the prompts - so no rule has to say so, and no key on
-    // the keyboard has to be greyed out and explained.
-    //
-    // The pool cannot run dry in play, measured rather than guessed: over 60
-    // years of every kind of player (test/sim.mjs) the most anybody owned by
-    // the END of the year was 100 of 144, the median 89, so at the second exam
-    // on week 36 forty-odd are always left to draw three prompts from. Only
-    // debugUnlockAll could empty it, and it leaves a club for this reason:
-    // empty, netPick hands back nothing; one or two short of n, the redraw
-    // below never ends.
-    const pool = netLib.filter(rec => !playerOwns(rec.e));
+    // Out of the whole library, owned or not. A prompt you happen to own is
+    // greyed on the answer sheet for that question and refused by the grader
+    // - the same rule as the thing they just showed you on a text or a date
+    // (chatKeyLive, dateReply): what is in front of you is not your reply.
+    // So the pool is the library and can never run short, whatever a year or
+    // the dev console has unlocked; drawn from what you did NOT own, it once
+    // threw on an empty pool and would have looped forever one short.
     while (1)
     {
-        const prompts = [...Array(n)].map(() => netPick(pool).e);
+        const prompts = [...Array(n)].map(() => netPick(netLib).e);
         if (new Set(prompts).size < n)
             continue;
         const shared = calExamShared(prompts);
@@ -210,8 +205,9 @@ function calExamBuild()
 }
 
 // a legal exam answer: owned, and never one of the three tone faces (GDD 8).
-// The question's own prompts need no exclusion - they are drawn from what
-// you do NOT own, so an answer can never be one of them.
+// The question's own prompts are excluded where the question is known - the
+// answer sheet, the grader and the best your keyboard could give - and this
+// stays the plain rule the date keyboard builds on too.
 function calExamKeyLive(emoji)
 {
     return playerOwns(emoji) && netByEmoji[emoji];
@@ -236,7 +232,7 @@ function calExamStart()
 function calExamAnswer(emoji)
 {
     const q = calExamQ[calExamAt];
-    if (!q || q.graded || !calExamKeyLive(emoji))
+    if (!q || q.graded || !calExamKeyLive(emoji) || q.prompts.includes(emoji))
         return;
     q.answer = emoji;
     q.score = calExamScore(emoji, q.prompts);
@@ -808,5 +804,5 @@ function calExamHTML()
     return `<h1>Question ${calExamAt + 1} of ${CAL_EXAM_QUESTIONS}</h1>` +
         hint(`pick one of yours that most matches ${q.prompts.length > 1 ? 'these' : 'this one'}`) +
         `<div class=picks>${q.prompts.map(e => glyph(e, 46)).join('')}</div>` +
-        chatKeyboardHTML(calExamKeyLive, 'examkey');
+        chatKeyboardHTML(e => calExamKeyLive(e) && !q.prompts.includes(e), 'examkey');
 }
