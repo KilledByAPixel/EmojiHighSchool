@@ -1,39 +1,49 @@
 # 🏫 Emoji High School
 
-# [PLAY ENHANCED VERSION](https://killedbyapixel.github.io/EmojiHighSchool/)
+A dating sim where everyone talks in emoji. You have one school year to figure out what your six classmates like, and win one of their hearts.
 
-# [OFFICIAL JS13K PAGE](https://js13kgames.com/2026/games/emoji-high-school)
+## 🧩 How It Works
 
-**One school year. Six classmates. The only language you speak is emoji.**
+Every emoji belongs to a few categories. 🐳 is *animal*, *blue*, *sea* and *huge*. The 😀 Emojis app lists them all.
 
-Everyone is hiding what they love. Every emoji has a club, a colour and tags — none of it hidden. Send someone a picture and read the face that comes back: 🍓 landing well could mean *red*, *food* or *tiny*. Send another to find out which.
+Each classmate secretly loves some categories and hates others. It's different every game, so you find out by texting.
 
-Nobody's taste is written down. It's rolled from a seed, so no guide can spoil it. You have forty weeks, and on the final day you can hand one of them the emoji they love most in the world and win their heart.
+Say you text someone 🐳 and it gets a 👍. Which category did they like? Try 🐬 next: the same categories minus *huge*. If the 👍 drops to a 😐, *huge* is probably it.
 
-![Emoji High School](cover.png)
+Good reactions fill their hearts ❤️, bad ones drain them 🤍. Watch what they text you too: people send things they like.
 
-## 🕹️ Controls
+## 📅 Your Week
 
-Mouse or touch; the game is one phone. - ⭐ = a slot you haven't spent, 🔋 = the week has something left, 🔊🎵 = sound and music.
+1. **🎒 School:** pick a club and learn one of its emoji.
+2. **💬 Phone:** only one action per week!
+3. **🌤️ Weekend:** go on your date or take a trip to learn another emoji.
 
-**🌈 load Twemoji font** leads the cards on the home screen. A 13kb entry can't ship a font, so it's only fetched if you ask; until then the emoji are your device's own.
+## 💬 Texting
 
-## 📱 How to Play
+Send two emoji you've learned, or one and a face:
 
-Three slots a week, and nothing carries over.
+- 🙂 halves the hearts won or lost. Use it while guessing.
+- 😍 doubles them. Use it once you're sure.
+- ❓ makes them say which category was hit.
 
-- **🏫 School.** Pick a club, learn one of three emoji, and run into whoever likes what you learned. Your collection is everything you can say.
-- **💬 The phone.** *One* action: text, give a present, or ask someone out — answering one costs it too.
-- **🌤️ The weekend.** The date you booked, or a trip alone for emoji school won't teach you.
+Each emoji you send gets its own 👍 or 👎. 📓 Notes remembers them all.
 
-A message is two slots, each an emoji or a face: 🙂 **just saying** halves the score either way, 😍 **I mean it** doubles it, ❓ **why?** names the opinion your emoji touched.
+## 🏆 How to Win
 
-Play it safe while guessing; say it like you mean it once you're sure. 📓 Notes remembers every reaction.
+1. Pass both exams: pick the emoji that shares the most categories with the ones shown.
+2. Get all six classmates to one ❤️ or better to reach the last day.
+3. Give someone at ❤️❤️❤️❤️ their favourite emoji. Notes marks it ★ when you find it.
+
+Best ending: everyone else at ❤️❤️ too. Ignore someone too long and they give up on you. Crushes get jealous of your dates.
+
+## 🕹️ Tips
+
+★ means there's something left to do this week.
+
+Tap **🌈 load Twemoji font** on the home screen for the recommended font.
 
 ## 🌈 Features
 
-- 146 emoji sharing 41 attributes, so what you learn about one tells you about others
-- Forty weeks of clubs, exams, dates, trips, birthdays, presents and jealousy
-- Five moods, and classmates who give up on you if you go quiet
-- Unicorn Week 🦄, a free emoji that goes with everything
-- Three endings, a yearbook, procedural music, ZzFX sound, vanilla JS
+- 🦄 Unicorn Week, with a free emoji from the school mascot
+- 🌈 Emojis sorted by colour, and rainbow matches every colour
+- Three endings, procedural music, ZzFX sound, vanilla JS
