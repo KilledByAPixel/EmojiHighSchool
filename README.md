@@ -2,7 +2,7 @@
 
 A dating sim where everyone talks in emoji. You have one school year to figure out what your six classmates like, and win one of their hearts.
 
-## 🧩 How It Works
+## 🌈 How It Works
 
 Every emoji belongs to a few categories. 🐳 is *animal*, *blue*, *sea* and *huge*. The 😀 Emojis app lists them all.
 
@@ -42,7 +42,7 @@ Best ending: everyone else at ❤️❤️ too. Ignore someone too long and they
 
 Tap **🌈 load Twemoji font** on the home screen for the recommended font.
 
-## 🌈 Features
+## 🚀 Features
 
 - 🦄 Unicorn Week, with a free emoji from the school mascot
 - 🌈 Emojis sorted by colour, and rainbow matches every colour
