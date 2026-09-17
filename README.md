@@ -1,6 +1,12 @@
 # 🏫 Emoji High School
 
+# [PLAY ENHANCED VERSION](https://killedbyapixel.github.io/EmojiHighSchool/)
+
+# [OFFICIAL JS13K PAGE](https://js13kgames.com/2026/games/emoji-high-school)
+
 A dating sim where everyone talks in emoji. You have one school year to figure out what your six classmates like, and win one of their hearts.
+
+![Emoji High School](cover.png)
 
 ## 🌈 How It Works
 
